@@ -1,0 +1,4 @@
+env
+src/app/Controller/DB/app_data_base.db
+src/build
+src/dist

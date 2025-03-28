@@ -1,0 +1,19 @@
+import flet as ft
+
+class InputFieldView:
+    
+    def __init__(self, page: ft.Page, event):
+        self.page = page
+        self.event = event
+        self.input_field = ft.TextField(
+            text_align=ft.TextAlign.LEFT,
+            width=self.page.window.width * 0.65,
+            height=50,
+            label="Digite sua pergunta",
+            tooltip="Digite sua pergunta",
+            on_submit=self.event
+        )
+
+    def input_field_view(self):
+        print("input_field_view")
+        return self.input_field
