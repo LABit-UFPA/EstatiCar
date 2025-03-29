@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from app.Services.vanna_service import VannaService
 from app.Services.database_config import DatabaseConfig
 from app.Components.progress_dialog import ProgressDialog
+from app.Controller.load_path import load_path_credentials
 
 class TimeoutException(Exception):
     """Exception raised when a function call times out."""
@@ -58,10 +59,9 @@ class ProcessDataTable:
             "api_key_gemini": api_key_gemini,
             "gemini_model_name": gemini_model_name
         }
-        json_path = os.path.dirname(sys.executable)
-        # json_path = os.path.dirname(__file__)
-        config_path = os.path.join(json_path, r"json\credentials.json")
-        with open(config_path, "w") as config_file:
+
+        config_path_credentials = load_path_credentials()
+        with open(config_path_credentials, "w") as config_file:
             json.dump(config_data, config_file, indent=4)
 
         ProgressDialog.progress_dialog.open = True

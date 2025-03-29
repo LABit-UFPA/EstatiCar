@@ -1,28 +1,20 @@
-import os
-import sys
 import json
+from app.Controller.load_path import load_path_credentials, load_path_config_database, load_path_sqlite_database
 
 def load_credentials():
-    json_path_credentials = os.path.dirname(sys.executable)
-    # json_path_credentials = os.path.dirname(__file__)
-    config_path_credentials = os.path.join(json_path_credentials, r"json\credentials.json")
 
-    with open(config_path_credentials, 'r') as config_file:
-        config_data_credentials = json.load(config_file)
+    config_path_credentials = load_path_credentials()
+    config_path_database = load_path_config_database()
+    config_path_sqlite_database = load_path_sqlite_database()
 
-    data_base_path = os.path.dirname(sys.executable)
-    # data_base_path = os.path.dirname(__file__)
-    path_db_sqlite = os.path.join(data_base_path, r"DB\app_data_base.db")
+    with open(config_path_credentials, 'r') as config_file_credentials:
+        config_data_credentials = json.load(config_file_credentials)
 
-    json_path_database = os.path.dirname(sys.executable)
-    # json_path_database = os.path.dirname(__file__)
-    config_path_database = os.path.join(json_path_database, r"json\databasepath.json")
-    
-    with open(config_path_database, 'r') as config_file:
-        config_data_path_database = json.load(config_file)
+    with open(config_path_database, 'r') as config_file_database:
+        config_data_path_database = json.load(config_file_database)
 
-    if path_db_sqlite:
-        config_data_path_database['path_db'] = path_db_sqlite
+    if config_path_sqlite_database:
+        config_data_path_database['path_db'] = config_path_sqlite_database
         with open(config_path_database, 'w') as config_file:
             json.dump(config_data_path_database, config_file, indent=4)
     else:
