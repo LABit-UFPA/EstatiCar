@@ -40,7 +40,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_hook=[],
-    console=True
+    console=False
 )
 
 coll = COLLECT(
