@@ -56,6 +56,7 @@ def main(page: ft.Page):
                 card_content.update()
                 page.update()
             else:
+                progress_dialog.open = False
                 error_dialog_view.show_error_dialog()
 
     file_picker = ft.FilePicker(on_result=None)
