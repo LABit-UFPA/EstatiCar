@@ -1,5 +1,6 @@
 import flet as ft
 from app.Controller.process_data_table import ProcessDataTable
+from app.Controller.process_data_table import ProcessDataTable
 
 class ColumnFilterDialog():
     def __init__(self, page: ft.Page):
@@ -20,9 +21,13 @@ class ColumnFilterDialog():
                 # ft.Radio(value="Gemini", label="Gemini")
             ])
         )
-
         self.exclude_filter = ft.TextField(label="Filter", on_change=self.filter_exclude)
         self.include_filter = ft.TextField(label="Filter", on_change=self.filter_include)
+
+    def handle_button_click(self):
+        self.process_data_table.resetLists()
+        self.process_data_table.file_picker.pick_files(allow_multiple=False, allowed_extensions=["xlsx"])
+
 
     def toggle_fields(self, e):
         selected = self.choice_llms.value
@@ -116,7 +121,7 @@ class ColumnFilterDialog():
                             elevation=2
                         ),
                         text="Selecionar arquivo", height=50, width=260,
-                        on_click=lambda _: self.process_data_table.file_picker.pick_files(allow_multiple=False, allowed_extensions=["xlsx"])
+                        on_click=lambda _: self.handle_button_click()
                     ),
                     ft.Row([exclude_container, buttons, include_container]),
                     ft.Text(

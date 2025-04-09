@@ -29,6 +29,10 @@ class ProcessDataTable:
         self.exclude_list = ft.ListView(expand=True, controls=[])
         self.build_lists(self.items)
 
+    def resetLists(self):
+        self.exclude_list.controls = []
+        self.include_list.controls = []
+
     def pre_process_df(self):
         if self.df is None or self.df.empty:
             self.df = pd.DataFrame(columns=["No Data"])
