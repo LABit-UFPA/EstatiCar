@@ -13,11 +13,15 @@ class ColumnFilterDialog():
 
         self.api_key_claude = ft.TextField(label="API Key Claude", visible=False)
 
+        self.api_key_gemini = ft.TextField(label="API Key Gemini", visible=False)
+        self.gemini_project_name = ft.TextField(label="Project Name Gemini", visible=False)
+
         self.choice_llms = ft.RadioGroup(
             on_change=self.toggle_fields,
             content=ft.Row([
                 ft.Radio(value="Vanna", label="Vanna"),
-                ft.Radio(value="Claude", label="Claude")
+                ft.Radio(value="Claude", label="Claude"),
+                ft.Radio(value="Gemini", label="Gemini")
             ])
         )
         self.exclude_filter = ft.TextField(label="Filter", on_change=self.filter_exclude)
@@ -32,11 +36,18 @@ class ColumnFilterDialog():
         selected = self.choice_llms.value
         is_vanna = selected == "Vanna"
         is_claude = selected == "Claude"
+        is_gemini = selected == "Gemini"
 
-        self.api_key_vanna.visible = is_vanna or is_claude
-        self.model_name_vanna.visible = is_vanna or is_claude
+        # Info Vanna
+        self.api_key_vanna.visible = is_vanna or is_claude or is_gemini
+        self.model_name_vanna.visible = is_vanna or is_claude or is_gemini
 
+        # Info Claude
         self.api_key_claude.visible = is_claude
+
+        # Info Gemini
+        self.api_key_gemini.visible = is_gemini
+        self.gemini_project_name.visible = is_gemini
 
         self.page.update()
 
@@ -135,7 +146,10 @@ class ColumnFilterDialog():
                             controls=[
                                 self.api_key_vanna,
                                 self.model_name_vanna,
-                                self.api_key_claude])
+                                self.api_key_claude,
+                                self.api_key_gemini,
+                                self.gemini_project_name,
+                                ])
                                 )]
                             )
             ),
@@ -148,8 +162,12 @@ class ColumnFilterDialog():
                     ),
                     text= "Realizar Treinamento", height=50, width=260,
                     on_click=lambda _: self.process_data_table.init_process_files(
-                        self.choice_llms.value, self.api_key_vanna.value, self.model_name_vanna.value,
-                        self.api_key_claude.value
+                        self.choice_llms.value,
+                        self.api_key_vanna.value,
+                        self.model_name_vanna.value,
+                        self.api_key_claude.value,
+                        self.api_key_gemini.value,
+                        self.gemini_project_name.value
                     ),
 
                 )
