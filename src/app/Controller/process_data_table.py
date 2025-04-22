@@ -56,12 +56,14 @@ class ProcessDataTable:
         self.build_lists(self.items)
         self.page.update()
  
-    def init_process_files(self, choice_llm, api_key_vanna, vanna_model_name, api_key_claude="", claude_model_name=""):
+    def init_process_files(self, choice_llm, api_key_vanna, vanna_model_name, api_key_claude="", claude_model_name="", api_key_gemini="", gemini_project_name=""):
         config_data = {
             "api_key_vanna": api_key_vanna,
             "vanna_model_name": vanna_model_name,
             "api_key_claude": api_key_claude,
-            "claude_model_name": claude_model_name
+            "claude_model_name": claude_model_name,
+            "api_key_gemini": api_key_gemini,
+            "gemini_project_name": gemini_project_name,
         }
 
         config_path_credentials = load_path_credentials()
@@ -127,6 +129,38 @@ class ProcessDataTable:
                             print("Claude model training timed out after 20 seconds")
                             self.page.snack_bar = ft.SnackBar(
                                 ft.Text("Treinamento do modelo Claude excedeu o tempo limite de 20 segundos!")
+                            )
+                            self.page.snack_bar.open = True
+                            return
+                elif choice_llm == "Gemini":
+                    def train_gemini_with_timeout():
+                        try:
+                            VannaService.train_model_gemini(
+                                VannaService.path_db_sqlite,
+                                api_key_gemini,
+                                gemini_project_name,
+                                api_key_vanna, 
+                                vanna_model_name,
+
+                            )
+
+                            VannaService.train_model_vanna_from_openia(
+                                VannaService.path_db_sqlite,
+                                api_key_vanna, 
+                                vanna_model_name
+                            )
+                        except Exception as e:
+                            print(f"Gemini training error: {e}")
+                            raise
+
+                    with ThreadPoolExecutor() as executor:
+                        future = executor.submit(train_gemini_with_timeout)
+                        try:
+                            future.result(timeout=20)
+                        except TimeoutError:
+                            print("Gemini model training timed out after 20 seconds")
+                            self.page.snack_bar = ft.SnackBar(
+                                ft.Text("Treinamento do modelo Gemini excedeu o tempo limite de 20 segundos!")
                             )
                             self.page.snack_bar.open = True
                             return
