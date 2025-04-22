@@ -1,4 +1,5 @@
 from vanna.remote import VannaDefault
+from vanna.google import GoogleGeminiChat
 from vanna.anthropic.anthropic_chat import Anthropic_Chat
 from vanna.vannadb.vannadb_vector import VannaDB_VectorStore
 from app.Controller.load_credentials import load_credentials
@@ -31,6 +32,25 @@ class VannaService:
                 Anthropic_Chat.__init__(self, config=config)
 
         vn = MyVanna(config=config)
+        
+        vn.connect_to_sqlite(path_db_sqlite)
+        
+        training_data = vn.get_training_data()
+
+        if len(training_data.columns) != 0:
+            for id_train in training_data['id']:
+                training_data = vn.remove_training_data(id=id_train)
+                
+        vn.train(sql=f"SELECT * FROM app_data_base")
+
+    def train_model_gemini(path_db_sqlite: str, api_key_gemini, gemini_project_name, api_key_vanna, vanna_model_name):
+        
+        class MyVanna(VannaDB_VectorStore, GoogleGeminiChat):
+            def __init__(self, config=None):
+                GoogleGeminiChat.__init__(self, config={'api_key': api_key_gemini, 'model': gemini_project_name})
+                VannaDB_VectorStore.__init__(self, vanna_model=vanna_model_name, vanna_api_key=api_key_vanna, config=config)
+
+        vn = MyVanna()
         
         vn.connect_to_sqlite(path_db_sqlite)
         
