@@ -8,11 +8,13 @@ from app.View.footer_view import FooterView
 from app.Themes.themes_data import ThemeData
 from app.Components.errors_app import ErrorApp
 from app.Components.data_table import data_table
+from app.View.input_field_view import InputFieldView
 from app.View.card_content_view import CardContentView
 from app.View.query_content_view import QueryContentView
 from app.Components.progress_dialog import ProgressDialog
 from app.View.column_filter_view import ColumnFilterDialog
 from app.Controller.load_credentials import load_credentials
+
 
 def main(page: ft.Page):
     ThemeData(page)
@@ -24,10 +26,12 @@ def main(page: ft.Page):
     card_content = card_view.show_card()
     tabs_container_view = tabs_container.tabs_container_view(card_view)
     progress_dialog = ProgressDialog.progress_dialog
+    input_field = InputFieldView(page)
+    input_field_view = input_field.input_field_view()
 
     def set_question(e):
         nonlocal last_result
-        prompt = input_field.value
+        prompt = input_field_view.value
         if prompt.strip():
             progress_dialog.open = True
             page.update()
@@ -89,14 +93,6 @@ def main(page: ft.Page):
             snack_bar.open = True
             page.update()
 
-    input_field = ft.TextField(
-        text_align=ft.TextAlign.LEFT,
-        width=page.window.width * .65,
-        height=50,
-        label="Digite sua pergunta",
-        tooltip="Digite sua pergunta",
-        on_submit=set_question
-    )
 
     train_floating_button = ft.FilledButton(
         style=ft.ButtonStyle(
@@ -138,7 +134,7 @@ def main(page: ft.Page):
                                 ft.Row(
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
-                                        input_field,
+                                        input_field_view,
                                         ft.IconButton(
                                             icon=ft.icons.SEARCH,
                                             on_click=set_question
