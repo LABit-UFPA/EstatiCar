@@ -16,6 +16,8 @@ from app.View.column_filter_view import ColumnFilterDialog
 from app.Controller.load_credentials import load_credentials
 
 
+from app.View.train_button import TrainButtonView
+
 def main(page: ft.Page):
     ThemeData(page)
     tabs_container = TabsView(page)
@@ -28,6 +30,8 @@ def main(page: ft.Page):
     progress_dialog = ProgressDialog.progress_dialog
     input_field = InputFieldView(page)
     input_field_view = input_field.input_field_view()
+
+    train_floating_button_view = TrainButtonView(page, filter_dialog_view.open).train_button_view()
 
     def set_question(e):
         nonlocal last_result
@@ -94,18 +98,6 @@ def main(page: ft.Page):
             page.update()
 
 
-    train_floating_button = ft.FilledButton(
-        style=ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=10),
-            side=ft.BorderSide(1, ft.colors.BLUE_ACCENT_100),
-            elevation=2
-        ),
-        text="Adicionar Arquivo",
-        height=50,
-        width=260,
-        on_click=lambda _: filter_dialog_view.open()
-    )
-
     download_table_floating_button = ft.FilledButton(
         style=ft.ButtonStyle(
             shape=ft.RoundedRectangleBorder(radius=10),
@@ -145,7 +137,7 @@ def main(page: ft.Page):
                                 ft.Row(
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
-                                        train_floating_button,
+                                        train_floating_button_view,
                                         download_table_floating_button
                                     ],
                                 ),
