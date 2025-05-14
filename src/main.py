@@ -17,6 +17,8 @@ from app.Controller.load_credentials import load_credentials
 
 
 from app.View.train_button import TrainButtonView
+from app.Controller.download_table import download_table
+from app.View.download_table_button import DownloadTableButtonView
 
 def main(page: ft.Page):
     ThemeData(page)
@@ -32,6 +34,9 @@ def main(page: ft.Page):
     input_field_view = input_field.input_field_view()
 
     train_floating_button_view = TrainButtonView(page, filter_dialog_view.open).train_button_view()
+
+    download_table_floating_button = DownloadTableButtonView(event_handler=lambda e: download_table(page, last_result))
+    download_table_floating_button_view = download_table_floating_button.download_table_view()
 
     def set_question(e):
         nonlocal last_result
@@ -71,45 +76,6 @@ def main(page: ft.Page):
     page.file_picker = file_picker
     page.add(file_picker)
 
-    def download_table():
-        if last_result is not None:
-            def on_result(e):
-                if e.path:
-                    try:
-                        save_path = f"{e.path}.xlsx"
-                        last_result.to_excel(save_path, index=False)
-
-                        if os.name == 'nt':  # Se for Windows, tenta abrir o diretório
-                            os.startfile(os.path.dirname(save_path))
-
-                        msg = "Tabela salva com sucesso."
-                    except Exception as ex:
-                        msg = f"Erro ao salvar: {ex}"
-
-                    snack_bar = ft.SnackBar(ft.Text(msg))
-                    snack_bar.open = True
-                    page.update()
-
-            page.file_picker.on_result = on_result
-            page.file_picker.save_file()
-        else:
-            snack_bar = ft.SnackBar(ft.Text("Nenhum resultado encontrado para salvar"))
-            snack_bar.open = True
-            page.update()
-
-
-    download_table_floating_button = ft.FilledButton(
-        style=ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=10),
-            side=ft.BorderSide(1, ft.colors.BLUE_ACCENT_100),
-            elevation=2
-        ),
-        text="Salvar Tabela",
-        height=50,
-        width=260,
-        on_click=lambda _: download_table()
-    )
-
     page.add(
         ft.Stack(
             controls=[
@@ -138,7 +104,7 @@ def main(page: ft.Page):
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
                                         train_floating_button_view,
-                                        download_table_floating_button
+                                        download_table_floating_button_view
                                     ],
                                 ),
                                 FooterView.footer
