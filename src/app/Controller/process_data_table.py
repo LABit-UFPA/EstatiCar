@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from app.Services.vanna_service import VannaService
 from app.Services.database_config import DatabaseConfig
 from app.Components.progress_dialog import ProgressDialog
-from app.Controller.load_path import load_path_credentials
+from app.Controller.load_path import load_path
 
 class TimeoutException(Exception):
     """Exception raised when a function call times out."""
@@ -66,7 +66,7 @@ class ProcessDataTable:
             "gemini_project_name": gemini_project_name,
         }
 
-        config_path_credentials = load_path_credentials()
+        config_path_credentials = load_path()
         with open(config_path_credentials, "w") as config_file:
             json.dump(config_data, config_file, indent=4)
 
