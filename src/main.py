@@ -60,7 +60,7 @@ def main(page: ft.Page):
                                         input_field_view,
                                         ft.IconButton(
                                             icon=ft.icons.SEARCH,
-                                            on_click=exec_set_question(lambda e: exec_set_question(e)),
+                                            on_click=lambda e: exec_set_question(e),
                                         )
                                     ]
                                 ),

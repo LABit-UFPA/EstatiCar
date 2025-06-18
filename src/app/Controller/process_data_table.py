@@ -56,17 +56,15 @@ class ProcessDataTable:
         self.build_lists(self.items)
         self.page.update()
  
-    def init_process_files(self, choice_llm, api_key_vanna, vanna_model_name, api_key_claude="", claude_model_name="", api_key_gemini="", gemini_project_name=""):
+    def init_process_files(self, choice_llm, api_key_claude="", claude_model_name="", api_key_gemini="", gemini_project_name=""):
         config_data = {
-            "api_key_vanna": api_key_vanna,
-            "vanna_model_name": vanna_model_name,
             "api_key_claude": api_key_claude,
             "claude_model_name": claude_model_name,
             "api_key_gemini": api_key_gemini,
             "gemini_project_name": gemini_project_name,
         }
 
-        config_path_credentials = load_path()
+        config_path_credentials = load_path("json/credentials.json")
         with open(config_path_credentials, "w") as config_file:
             json.dump(config_data, config_file, indent=4)
 
@@ -78,14 +76,10 @@ class ProcessDataTable:
                 name_columns_include = [button.text for button in self.include_list.controls]
                 DatabaseConfig.create_db(DatabaseConfig.credentials_file, DatabaseConfig.path_db_sqlite, self.excel_path, name_columns_include)
 
-                if choice_llm == "Vanna":
+                if choice_llm == "Mistral":
                     def train_vanna_with_timeout():
                         try:
-                            VannaService.train_model_vanna_from_openia(
-                                VannaService.path_db_sqlite,
-                                api_key_vanna, 
-                                vanna_model_name
-                            )
+                            VannaService.train_model_vanna_from_openia(VannaService.path_db_sqlite)
                         except Exception as e:
                             print(f"Vanna training error: {e}")
                             raise
@@ -107,15 +101,6 @@ class ProcessDataTable:
                             VannaService.train_model_claude(
                                 VannaService.path_db_sqlite,
                                 api_key_claude,
-                                api_key_vanna, 
-                                vanna_model_name,
-
-                            )
-
-                            VannaService.train_model_vanna_from_openia(
-                                VannaService.path_db_sqlite,
-                                api_key_vanna, 
-                                vanna_model_name
                             )
                         except Exception as e:
                             print(f"Claude training error: {e}")
@@ -139,15 +124,6 @@ class ProcessDataTable:
                                 VannaService.path_db_sqlite,
                                 api_key_gemini,
                                 gemini_project_name,
-                                api_key_vanna, 
-                                vanna_model_name,
-
-                            )
-
-                            VannaService.train_model_vanna_from_openia(
-                                VannaService.path_db_sqlite,
-                                api_key_vanna, 
-                                vanna_model_name
                             )
                         except Exception as e:
                             print(f"Gemini training error: {e}")
