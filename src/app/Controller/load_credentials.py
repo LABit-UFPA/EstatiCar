@@ -2,12 +2,8 @@ import json
 from app.Controller.load_path import load_path
 
 def load_credentials():
-    config_path_credentials = load_path("json/credentials.json")
     config_path_database = load_path("json/databasepath.json")  
     config_path_sqlite_database = load_path("DB/app_data_base.db")
-
-    with open(config_path_credentials, 'r') as config_file_credentials:
-        config_data_credentials = json.load(config_file_credentials)
 
     with open(config_path_database, 'r') as config_file_database:
         config_data_path_database = json.load(config_file_database)
@@ -18,5 +14,5 @@ def load_credentials():
             json.dump(config_data_path_database, config_file, indent=4)
     else:
         print("Path não foi alterado.")
-    print([config_data_credentials, config_data_path_database])
-    return [config_data_credentials, config_data_path_database]
+    
+    return config_data_path_database
