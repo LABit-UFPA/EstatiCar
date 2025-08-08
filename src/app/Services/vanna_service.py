@@ -7,58 +7,15 @@ from app.Services.qdrant_client import client
 from app.Services.ollama_mistral_service import OllamaService
 
 class VannaService:
-    credentials_file = load_credentials()
-    credentials_path_database = credentials_file[1]
+    credentials_path_database = load_credentials()
     path_db_sqlite = credentials_path_database['path_db']
 
-    def train_model_vanna_from_openia(path_db_sqlite: str):
-        vn = OllamaService(config={'client': client, 'model': 'mistral'})
+    def train_model_vanna_from_openia(path_db_sqlite: str, choice : str):
+        vn = OllamaService(config={'client': client, 'model': choice.lower()})
         vn.connect_to_sqlite(path_db_sqlite)
         training_data = vn.get_training_data()
         if len(training_data.columns) != 0:
             for id_train in training_data['id']:
                 training_data = vn.remove_training_data(id=id_train)
         
-        vn.train(sql=f"SELECT * FROM app_data_base")
-
-    def train_model_claude(path_db_sqlite: str, api_key_claude, api_key_vanna, vanna_model_name):
-        api_key = api_key_claude
-        model = "claude-3.5-sonnet-20240620"
-        config = {'api_key':api_key,'model':model}
-        
-        class MyVanna(VannaDB_VectorStore, Anthropic_Chat):
-            def __init__(self, config=None):
-                MY_VANNA_MODEL =  vanna_model_name
-                VannaDB_VectorStore.__init__(self, vanna_model=MY_VANNA_MODEL, vanna_api_key= api_key_vanna, config=config)
-                Anthropic_Chat.__init__(self, config=config)
-
-        vn = MyVanna(config=config)
-        
-        vn.connect_to_sqlite(path_db_sqlite)
-        
-        training_data = vn.get_training_data()
-
-        if len(training_data.columns) != 0:
-            for id_train in training_data['id']:
-                training_data = vn.remove_training_data(id=id_train)
-                
-        vn.train(sql=f"SELECT * FROM app_data_base")
-
-    def train_model_gemini(path_db_sqlite: str, api_key_gemini, gemini_project_name, api_key_vanna, vanna_model_name):
-        
-        class MyVanna(VannaDB_VectorStore, GoogleGeminiChat):
-            def __init__(self, config=None):
-                GoogleGeminiChat.__init__(self, config={'api_key': api_key_gemini, 'model': gemini_project_name})
-                VannaDB_VectorStore.__init__(self, vanna_model=vanna_model_name, vanna_api_key=api_key_vanna, config=config)
-
-        vn = MyVanna()
-        
-        vn.connect_to_sqlite(path_db_sqlite)
-        
-        training_data = vn.get_training_data()
-
-        if len(training_data.columns) != 0:
-            for id_train in training_data['id']:
-                training_data = vn.remove_training_data(id=id_train)
-                
         vn.train(sql=f"SELECT * FROM app_data_base")

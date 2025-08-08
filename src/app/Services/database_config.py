@@ -3,8 +3,7 @@ import pandas as pd
 from app.Controller.load_credentials import load_credentials
 
 class DatabaseConfig:
-    credentials_file = load_credentials()
-    credentials_path_database = credentials_file[1]
+    credentials_path_database = load_credentials()
     path_db_sqlite = credentials_path_database['path_db']
     
     def __init__(self, path_file_excel: str, columns_df : list[str]):

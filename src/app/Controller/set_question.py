@@ -11,8 +11,7 @@ def set_question(e, page, input_field_view, progress_dialog, error_dialog_view, 
         if prompt.strip():
             progress_dialog.open = True
             page.update()
-            jsonFile = load_credentials()
-            info_database = jsonFile[1]
+            info_database = load_credentials()
             path_db_sqlite = info_database['path_db']
             vn = OllamaService(config={'client': client, 'model': 'mistral'})
             vn.connect_to_sqlite(path_db_sqlite)
