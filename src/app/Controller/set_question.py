@@ -1,10 +1,10 @@
 import flet as ft
 import pandas as pd
-from app.Components.data_table import data_table
-from app.Controller.load_credentials import load_credentials
+from Components.data_table import data_table
+from Controller.load_credentials import load_credentials
 
-from app.Services.qdrant_client import client
-from app.Services.ollama_mistral_service import OllamaService
+from Services.qdrant_client import client
+from Services.ollama_mistral_service import OllamaService
 
 def set_question(e, page, input_field_view, progress_dialog, error_dialog_view, card_content, QueryContentView, last_result=None):
         prompt = input_field_view.value

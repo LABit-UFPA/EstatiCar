@@ -1,10 +1,10 @@
 from vanna.google import GoogleGeminiChat
 from vanna.anthropic.anthropic_chat import Anthropic_Chat
 from vanna.vannadb.vannadb_vector import VannaDB_VectorStore
-from app.Controller.load_credentials import load_credentials
+from Controller.load_credentials import load_credentials
 
-from app.Services.qdrant_client import client
-from app.Services.ollama_mistral_service import OllamaService
+from Services.qdrant_client import client
+from Services.ollama_mistral_service import OllamaService
 
 class VannaService:
     credentials_path_database = load_credentials()

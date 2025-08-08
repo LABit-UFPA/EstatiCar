@@ -1,5 +1,5 @@
 import flet as ft
-from app.Components.footer_components import Footer
+from Components.footer_components import Footer
 
 
 class FooterView:

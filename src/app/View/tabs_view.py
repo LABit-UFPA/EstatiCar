@@ -1,5 +1,5 @@
 import flet as ft
-from app.View.query_content_view import QueryContentView
+from View.query_content_view import QueryContentView
 
 class TabsView:
 

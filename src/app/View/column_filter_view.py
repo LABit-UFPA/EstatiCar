@@ -1,6 +1,6 @@
 import flet as ft
-from app.Controller.process_data_table import ProcessDataTable
-from app.Controller.process_data_table import ProcessDataTable
+from Controller.process_data_table import ProcessDataTable
+from Controller.process_data_table import ProcessDataTable
 
 class ColumnFilterDialog():
     def __init__(self, page: ft.Page):

@@ -1,6 +1,6 @@
 import sqlite3
 import pandas as pd
-from app.Controller.load_credentials import load_credentials
+from Controller.load_credentials import load_credentials
 
 class DatabaseConfig:
     credentials_path_database = load_credentials()

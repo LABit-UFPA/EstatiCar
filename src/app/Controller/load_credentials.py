@@ -1,5 +1,5 @@
 import json
-from app.Controller.load_path import load_path
+from Controller.load_path import load_path
 
 def load_credentials():
     config_path_database = load_path("json/databasepath.json")  

@@ -1,21 +1,21 @@
 import flet as ft
 
-from app.Themes.themes_data import ThemeData
+from Themes.themes_data import ThemeData
 
-from app.View.tabs_view import TabsView
-from app.View.footer_view import FooterView
-from app.View.input_field_view import InputFieldView
-from app.View.card_content_view import CardContentView
-from app.View.query_content_view import QueryContentView
-from app.View.column_filter_view import ColumnFilterDialog
-from app.View.train_button import TrainButtonView
-from app.View.download_table_button import DownloadTableButtonView
+from View.tabs_view import TabsView
+from View.footer_view import FooterView
+from View.input_field_view import InputFieldView
+from View.card_content_view import CardContentView
+from View.query_content_view import QueryContentView
+from View.column_filter_view import ColumnFilterDialog
+from View.train_button import TrainButtonView
+from View.download_table_button import DownloadTableButtonView
 
-from app.Components.progress_dialog import ProgressDialog
-from app.Components.errors_app import ErrorApp
+from Components.progress_dialog import ProgressDialog
+from Components.errors_app import ErrorApp
 
-from app.Controller.set_question import set_question
-from app.Controller.download_table import download_table
+from Controller.set_question import set_question
+from Controller.download_table import download_table
 
 def main(page: ft.Page):
     ThemeData(page)
@@ -35,6 +35,10 @@ def main(page: ft.Page):
     train_floating_button_view = TrainButtonView(page, filter_dialog_view.open).train_button_view()
 
     download_table_floating_button = DownloadTableButtonView(event_handler=lambda e: download_table(page, last_result))
+    # download_table_floating_button = DownloadTableButtonView(
+    #     event_handler=lambda e: asyncio.create_task(download_table(page, last_result))
+    # )
+
     download_table_floating_button_view = download_table_floating_button.download_table_view()
 
     file_picker = ft.FilePicker(on_result=None)
