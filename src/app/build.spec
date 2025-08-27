@@ -8,15 +8,15 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('app/Controller/json/*.json', 'Controller/json/'),
-        ('app/Controller/DB/*.db', 'Controller/DB/'),
-        ('app/assets/images/*', 'assets/images/'),
-        ('app/Components', 'Components/'),
-        ('app/Services', 'Services/'),
-        ('app/Themes', 'Themes/'),
-        ('app/View', 'View/')
+        ('Controller/json/*.json', 'Controller/json/'),
+        ('Controller/DB/*.db', 'Controller/DB/'),
+        ('assets/images/*', 'assets/images/'),
+        ('Components', 'Components/'),
+        ('Services', 'Services/'),
+        ('Themes', 'Themes/'),
+        ('View', 'View/')
     ],
-    hiddenimports=[],
+    hiddenimports=['ollama'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
