@@ -1,6 +1,3 @@
-from vanna.google import GoogleGeminiChat
-from vanna.anthropic.anthropic_chat import Anthropic_Chat
-from vanna.vannadb.vannadb_vector import VannaDB_VectorStore
 from Controller.load_credentials import load_credentials
 
 from Services.qdrant_client import client
@@ -10,8 +7,8 @@ class VannaService:
     credentials_path_database = load_credentials()
     path_db_sqlite = credentials_path_database['path_db']
 
-    def train_model_vanna_from_openia(path_db_sqlite: str, choice : str):
-        vn = OllamaService(config={'client': client, 'model': choice.lower()})
+    def train_model_vanna_from_openia(path_db_sqlite: str, model : str):
+        vn = OllamaService(config={'client': client, 'model': model.lower()})
         vn.connect_to_sqlite(path_db_sqlite)
         training_data = vn.get_training_data()
         if len(training_data.columns) != 0:

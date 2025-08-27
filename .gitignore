@@ -1,3 +1,11 @@
-env
+flecha_env
 src/build
 src/dist
+qdrant_storage
+ollama_models
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.txt

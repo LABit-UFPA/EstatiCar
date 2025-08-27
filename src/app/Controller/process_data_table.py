@@ -10,6 +10,8 @@ from Services.database_config import DatabaseConfig
 from Components.progress_dialog import ProgressDialog
 from Controller.load_path import load_path
 
+from utils import choice
+
 class TimeoutException(Exception):
     """Exception raised when a function call times out."""
     pass
@@ -67,7 +69,8 @@ class ProcessDataTable:
                 DatabaseConfig.create_db(DatabaseConfig.credentials_path_database, DatabaseConfig.path_db_sqlite, self.excel_path, name_columns_include)
 
                 if choice_llm == "Mistral":
-                    def train_vanna_with_timeout(choice = "Mistral"):
+                    choice.record_choice("mistral")
+                    def train_vanna_with_timeout(choice = "mistral"):
                         try:
                             VannaService.train_model_vanna_from_openia(VannaService.path_db_sqlite, choice)
                         except Exception as e:
@@ -86,7 +89,8 @@ class ProcessDataTable:
                             self.page.snack_bar.open = True
                             return
                 elif choice_llm == "llama":
-                    def train_vanna_with_timeout(choice = "llama"):
+                    choice.record_choice("llama3.1")
+                    def train_vanna_with_timeout(choice = "llama3.1"):
                         try:
                             VannaService.train_model_vanna_from_openia(VannaService.path_db_sqlite, choice)
                         except Exception as e:
