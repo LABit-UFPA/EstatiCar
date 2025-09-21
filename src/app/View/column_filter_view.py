@@ -186,8 +186,10 @@ class ColumnFilterDialog():
         )
 
         buttons = ft.Column([
-            ft.ElevatedButton("→", on_click=self._move_to_include),
-            ft.ElevatedButton("←", on_click=self._move_to_exclude)
+            ft.ElevatedButton("→", on_click=self.process_data_table.move_to_include),
+            ft.ElevatedButton(">>", on_click=self.process_data_table.move_all_to_include),
+            ft.ElevatedButton("<<", on_click=self.process_data_table.move_all_to_exclude),
+            ft.ElevatedButton("←", on_click=self.process_data_table.move_to_exclude),
         ])
 
         return ft.AlertDialog(
@@ -225,22 +227,6 @@ class ColumnFilterDialog():
                 )
             ]
         )
-
-    def _move_to_include(self, e):
-        """Move o primeiro item da lista de exclusão para inclusão"""
-        if self.original_exclude_values:
-            item = self.original_exclude_values.pop(0)
-            if item not in self.original_include_values:
-                self.original_include_values.append(item)
-            self._refresh_filtered_views()
-
-    def _move_to_exclude(self, e):
-        """Move o primeiro item da lista de inclusão para exclusão"""
-        if self.original_include_values:
-            item = self.original_include_values.pop(0)
-            if item not in self.original_exclude_values:
-                self.original_exclude_values.append(item)
-            self._refresh_filtered_views()
 
     def _handle_training(self):
         """Inicia o treinamento sincronizando primeiro com ProcessDataTable"""
