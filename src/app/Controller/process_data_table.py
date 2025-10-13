@@ -1,16 +1,11 @@
-import os
-import sys
-import json
 import flet as ft
 import pandas as pd
+from utils import choice
 from Components.data_table import data_table
 from concurrent.futures import ThreadPoolExecutor
 from Services.vanna_service import VannaService
 from Services.database_config import DatabaseConfig
 from Components.progress_dialog import ProgressDialog
-from Controller.load_path import load_path
-
-from utils import choice
 
 class TimeoutException(Exception):
     """Exception raised when a function call times out."""
