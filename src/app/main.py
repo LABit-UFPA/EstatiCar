@@ -29,9 +29,7 @@ def main(page: ft.Page):
     card_content = card_view.show_card()
     tabs_container_view = tabs_container.tabs_container_view(card_view)
     progress_dialog = ProgressDialog.progress_dialog
-    data_choice = choice.read_choice()
-    print("\n\n\n" + data_choice + "\n\n\n")
-    exec_set_question = lambda e: set_question(e, page, input_field_view, progress_dialog, error_dialog_view, card_content, QueryContentView, data_choice, last_result)
+    exec_set_question = lambda e: set_question(e, page, input_field_view, progress_dialog, error_dialog_view, card_content, QueryContentView, last_result)
 
     input_field = InputFieldView(exec_set_question, page)
     input_field_view = input_field.input_field_view()

@@ -1,34 +1,25 @@
 import flet as ft
 from Controller.process_data_table import ProcessDataTable
 from Controller.process_data_table import ProcessDataTable
-
+from Components.DropDownComponentMenu import DropdownMenuComponent
 class ColumnFilterDialog():
     def __init__(self, page: ft.Page):
         self.page = page
         self.process_data_table = ProcessDataTable(self.page)
         self.table = self.process_data_table.get_df()
-
-        self.choice_llms = ft.RadioGroup(
-            on_change=self.toggle_fields,
-            content=ft.Row([
-                ft.Radio(value="Mistral", label="Mistral"),
-                ft.Radio(value="llama", label="llama"),
-            ])
-        )
+        self.choice_llms = DropdownMenuComponent(
+                    page=self.page,
+                    options=["mistral","llama","gemma3:4b", "smollm2:1.7b", "qwen3:4b"],
+                    label="Escolha o modelo de IA",
+                    event_handler=lambda e: print(f"Modelo selecionado: {e.control.value}")
+                ).dropdown_menu_view()
+        
         self.exclude_filter = ft.TextField(label="Filter", on_change=self.filter_exclude)
         self.include_filter = ft.TextField(label="Filter", on_change=self.filter_include)
 
     def handle_button_click(self):
         self.process_data_table.resetLists()
         self.process_data_table.file_picker.pick_files(allow_multiple=False, allowed_extensions=["xlsx"])
-
-
-    def toggle_fields(self, e):
-        selected = self.choice_llms.value
-        is_mistral = selected == "Mistral"
-        is_llama = selected == "llamma"
-
-        self.page.update()
 
     def filter_exclude(self, e):
         """Filtra os itens da lista de exclusão sem perder os dados originais."""
