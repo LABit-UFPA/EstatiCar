@@ -26,45 +26,102 @@ class ColumnFilterDialog():
         if not self.process_data_table.exclude_list or not self.process_data_table.exclude_list.controls:
             return
 
-        original_exclude_values = [
-            item.content.value for item in self.process_data_table.exclude_list.controls if item and item.content
+        return [
+            ft.TextButton(text=item, on_click=self._handle_item_click) 
+            for item in original_values 
+            if item and query_lower in item.lower()
         ]
 
-        query = self.exclude_filter.value.lower()
-        self.process_data_table.exclude_list.controls = [
-            ft.Text(value=item) for item in original_exclude_values if query in item.lower()
-        ]
+    def _handle_item_click(self, e):
+        """Handler personalizado que atualiza as listas originais e depois a visualização"""
+        btn = e.control
+        item_text = btn.text
         
-        print("exclude_list:", self.process_data_table.exclude_list)
-        print("exclude_list.controls:", getattr(self.process_data_table.exclude_list, "controls", None))
+        if item_text in self.original_exclude_values:
+            self.original_exclude_values.remove(item_text)
+            if item_text not in self.original_include_values:
+                self.original_include_values.append(item_text)
+        elif item_text in self.original_include_values:
+            self.original_include_values.remove(item_text)
+            if item_text not in self.original_exclude_values:
+                self.original_exclude_values.append(item_text)
+        
+        self._refresh_filtered_views()
 
-
+    def _refresh_filtered_views(self):
+        """Atualiza ambas as visualizações baseadas no filtro atual"""
+        exclude_query = self.exclude_filter.value if self.exclude_filter.value else ""
+        include_query = self.include_filter.value if self.include_filter.value else ""
+        
+        exclude_filtered = self._create_filtered_view(self.original_exclude_values, exclude_query)
+        self.process_data_table.exclude_list.controls = exclude_filtered
+        
+        include_filtered = self._create_filtered_view(self.original_include_values, include_query)
+        self.process_data_table.include_list.controls = include_filtered
+        
         self.page.update()
 
+    def _restore_original_buttons(self, values_list, target_list):
+        """Restaura os botões originais para permitir interação"""
+        if not values_list:
+            return
+            
+        target_list.controls.clear()
+        for value in values_list:
+            if value:
+                btn = ft.TextButton(
+                    text=value, 
+                    on_click=self.process_data_table.toggle_item
+                )
+                target_list.controls.append(btn)
+
+    def filter_exclude(self, e):
+        """Filtra a visualização da lista de exclusão"""
+        if not self.original_exclude_values:
+            self._update_original_lists()
+        
+        query = self.exclude_filter.value if self.exclude_filter.value else ""
+        
+        filtered_controls = self._create_filtered_view(self.original_exclude_values, query)
+        self.process_data_table.exclude_list.controls = filtered_controls
+        
+        self.page.update()
 
     def filter_include(self, e):
-        """Filtra os itens da lista de inclusão sem perder os dados originais."""
-        if not self.process_data_table.include_list or not self.process_data_table.include_list.controls:
-            return
-
-        original_include_values = [
-            item.content.value for item in self.process_data_table.include_list.controls if item and item.content
-        ]
-
-        query = self.include_filter.value.lower()
-        self.process_data_table.include_list.controls = [
-            ft.Text(value=item) for item in original_include_values if query in item.lower()
-        ]
-        print("include_list:", self.process_data_table.include_list)
-        print("include_list.controls:", getattr(self.process_data_table.include_list, "controls", None))
-
+        """Filtra a visualização da lista de inclusão"""
+        if not self.original_include_values:
+            self._update_original_lists()
+        
+        query = self.include_filter.value if self.include_filter.value else ""
+        
+        filtered_controls = self._create_filtered_view(self.original_include_values, query)
+        self.process_data_table.include_list.controls = filtered_controls
+        
         self.page.update()
 
+    def restore_original_view(self):
+        """Restaura a visualização original das listas (sem filtro)"""
+        if self.original_exclude_values:
+            self.process_data_table.exclude_list.controls = self._create_filtered_view(
+                self.original_exclude_values, ""
+            )
+        if self.original_include_values:
+            self.process_data_table.include_list.controls = self._create_filtered_view(
+                self.original_include_values, ""
+            )
+        
+        self.exclude_filter.value = ""
+        self.include_filter.value = ""
+        
+        self.page.update()
 
     def build(self):
+        self._update_original_lists()
+        
         exclude_container = ft.Container(
             content=ft.Column([
                 ft.Text("Colunas Removidas:", size=16, weight=ft.FontWeight.BOLD, color="red600"),
+                self.exclude_filter,
                 ft.Container(self.process_data_table.exclude_list, border=ft.border.all(1), padding=10, height=150),
             ]),
             border=ft.border.all(2, ft.colors.RED),
@@ -75,6 +132,7 @@ class ColumnFilterDialog():
         include_container = ft.Container(
             content=ft.Column([
                 ft.Text("Colunas Selecionadas:", size=16, weight=ft.FontWeight.BOLD, color="green600"),
+                self.include_filter,
                 ft.Container(self.process_data_table.include_list, border=ft.border.all(1), padding=10, height=150),
             ]),
             border=ft.border.all(2, ft.colors.GREEN),
@@ -84,7 +142,9 @@ class ColumnFilterDialog():
 
         buttons = ft.Column([
             ft.ElevatedButton("→", on_click=self.process_data_table.move_to_include),
-            ft.ElevatedButton("←", on_click=self.process_data_table.move_to_exclude)
+            ft.ElevatedButton(">>", on_click=self.process_data_table.move_all_to_include),
+            ft.ElevatedButton("<<", on_click=self.process_data_table.move_all_to_exclude),
+            ft.ElevatedButton("←", on_click=self.process_data_table.move_to_exclude),
         ])
 
         return ft.AlertDialog(
@@ -118,13 +178,24 @@ class ColumnFilterDialog():
                         elevation=2
                     ),
                     text= "Realizar Treinamento", height=50, width=260,
-                    on_click=lambda _: self.process_data_table.init_process_files(
-                        self.choice_llms.value,
-                    ),
-
+                    on_click=lambda _: self._handle_training(),
                 )
             ]
         )
+
+    def _handle_training(self):
+        """Inicia o treinamento sincronizando primeiro com ProcessDataTable"""
+
+        self.process_data_table.exclude_list.controls = [
+            ft.TextButton(text=item, on_click=self.process_data_table.toggle_item)
+            for item in self.original_exclude_values
+        ]
+        self.process_data_table.include_list.controls = [
+            ft.TextButton(text=item, on_click=self.process_data_table.toggle_item)
+            for item in self.original_include_values
+        ]
+        
+        self.process_data_table.init_process_files(self.choice_llms.value)
 
     def open(self):
         self.dialog = self.build()

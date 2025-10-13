@@ -113,6 +113,22 @@ class ProcessDataTable:
             self.include_list.controls.append(item)
             self.page.update()
 
+    def move_all_to_include(self, e):
+        """Move todos os itens da lista de exclusão para inclusão"""
+        if self.exclude_list.controls:
+            items_to_move = self.exclude_list.controls[:]
+            self.include_list.controls.extend(items_to_move)
+            self.exclude_list.controls.clear()
+            self.page.update()
+
+    def move_all_to_exclude(self, e):
+        """Move todos os itens da lista de inclusão para exclusão"""
+        if self.include_list.controls:
+            items_to_move = self.include_list.controls[:]
+            self.exclude_list.controls.extend(items_to_move)
+            self.include_list.controls.clear()
+            self.page.update()
+
     
     def toggle_item(self, e):
         btn = e.control
