@@ -1,75 +1,30 @@
 import flet as ft
 from Controller.process_data_table import ProcessDataTable
-
+from Controller.process_data_table import ProcessDataTable
+from Components.DropDownComponentMenu import DropdownMenuComponent
 class ColumnFilterDialog():
     def __init__(self, page: ft.Page):
         self.page = page
         self.process_data_table = ProcessDataTable(self.page)
         self.table = self.process_data_table.get_df()
-
-        self.choice_llms = ft.RadioGroup(
-            content=ft.Row([
-                ft.Radio(value="Mistral", label="Mistral"),
-                ft.Radio(value="llama", label="llama"),
-            ])
-        )
+        self.choice_llms = DropdownMenuComponent(
+                    page=self.page,
+                    options=["mistral","llama","gemma3:4b", "smollm2:1.7b", "qwen3:4b"],
+                    label="Escolha o modelo de IA",
+                    event_handler=lambda e: print(f"Modelo selecionado: {e.control.value}")
+                ).dropdown_menu_view()
         
-        self.original_exclude_values = []
-        self.original_include_values = []
-        
-        self.exclude_filter = ft.TextField(label="Pesquisar coluna", on_change=self.filter_exclude)
-        self.include_filter = ft.TextField(label="Pesquisar coluna", on_change=self.filter_include)
+        self.exclude_filter = ft.TextField(label="Filter", on_change=self.filter_exclude)
+        self.include_filter = ft.TextField(label="Filter", on_change=self.filter_include)
 
     def handle_button_click(self):
         self.process_data_table.resetLists()
         self.process_data_table.file_picker.pick_files(allow_multiple=False, allowed_extensions=["xlsx"])
 
-        self._update_original_lists()
-
-    def _extract_text_from_control(self, control):
-        """Extrai o texto de diferentes tipos de controles Flet"""
-        if control is None:
-            return ""
-        
-        if hasattr(control, 'text') and control.text is not None:
-            return control.text
-        
-        if hasattr(control, 'value') and control.value is not None:
-            return control.value
-        
-        if hasattr(control, 'content'):
-            if hasattr(control.content, 'value') and control.content.value is not None:
-                return control.content.value
-            if hasattr(control.content, 'text') and control.content.text is not None:
-                return control.content.text
-        
-        if isinstance(control, str):
-            return control
-            
-        return ""
-
-    def _update_original_lists(self):
-        """Atualiza as listas originais com os valores atuais"""
-        self.original_exclude_values = [
-            self._extract_text_from_control(item)
-            for item in self.process_data_table.exclude_list.controls
-            if item is not None
-        ]
-        self.original_include_values = [
-            self._extract_text_from_control(item)
-            for item in self.process_data_table.include_list.controls
-            if item is not None
-        ]
-
-    def _create_filtered_view(self, original_values, query):
-        """Cria uma view filtrada dos valores sem modificar a lista original"""
-        if not query:
-            return [
-                ft.TextButton(text=item, on_click=self._handle_item_click) 
-                for item in original_values if item
-            ]
-        
-        query_lower = query.lower()
+    def filter_exclude(self, e):
+        """Filtra os itens da lista de exclusão sem perder os dados originais."""
+        if not self.process_data_table.exclude_list or not self.process_data_table.exclude_list.controls:
+            return
 
         return [
             ft.TextButton(text=item, on_click=self._handle_item_click) 

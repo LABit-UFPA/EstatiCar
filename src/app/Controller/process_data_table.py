@@ -68,47 +68,13 @@ class ProcessDataTable:
                 name_columns_include = [button.text for button in self.include_list.controls]
                 DatabaseConfig.create_db(DatabaseConfig.credentials_path_database, DatabaseConfig.path_db_sqlite, self.excel_path, name_columns_include)
 
-                if choice_llm == "Mistral":
-                    choice.record_choice("mistral")
-                    def train_vanna_with_timeout(choice = "mistral"):
-                        try:
-                            VannaService.train_model_vanna_from_openia(VannaService.path_db_sqlite, choice)
-                        except Exception as e:
-                            print(f"Vanna training error: {e}")
-                            raise
+                try:
+                    choice.record_choice(choice_llm)
+                    VannaService.train_model_vanna_from_openia(VannaService.path_db_sqlite, choice_llm)
+                except Exception as e:
+                    print(f"Vanna training error: {e}")
+                    raise
 
-                    with ThreadPoolExecutor() as executor:
-                        future = executor.submit(train_vanna_with_timeout)
-                        try:
-                            future.result(timeout=20)
-                        except TimeoutError:
-                            print("Vanna model training timed out after 20 seconds")
-                            self.page.snack_bar = ft.SnackBar(
-                                ft.Text("Treinamento do modelo Vanna excedeu o tempo limite de 20 segundos!")
-                            )
-                            self.page.snack_bar.open = True
-                            return
-                elif choice_llm == "llama":
-                    choice.record_choice("llama3.1")
-                    def train_vanna_with_timeout(choice = "llama3.1"):
-                        try:
-                            VannaService.train_model_vanna_from_openia(VannaService.path_db_sqlite, choice)
-                        except Exception as e:
-                            print(f"Vanna training error: {e}")
-                            raise
-
-                    with ThreadPoolExecutor() as executor:
-                        future = executor.submit(train_vanna_with_timeout)
-                        try:
-                            future.result(timeout=20)
-                        except TimeoutError:
-                            print("Vanna model training timed out after 20 seconds")
-                            self.page.snack_bar = ft.SnackBar(
-                                ft.Text("Treinamento do modelo Vanna excedeu o tempo limite de 20 segundos!")
-                            )
-                            self.page.snack_bar.open = True
-                            return
-                        
                 ProgressDialog.progress_dialog.open = False
                 self.page.snack_bar = ft.SnackBar(ft.Text("Modelo treinado com sucesso!"))
                 self.page.snack_bar.open = True
