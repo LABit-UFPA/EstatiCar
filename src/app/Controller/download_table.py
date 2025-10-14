@@ -3,7 +3,7 @@ from Controller.save_excel import save_excel
 
 def download_table(page, state):
     if state.last_result is not None:
-        def on_result(e, state):
+        def on_result(e):
             if e.path:
                 msg = save_excel(e, state)
                 snack_bar = ft.SnackBar(ft.Text(msg))
