@@ -1,6 +1,6 @@
 flecha_env
-src/build
-src/dist
+build
+dist
 qdrant_storage
 ollama_models
 
