@@ -1,11 +1,11 @@
 import flet as ft
 from Controller.save_excel import save_excel
 
-def download_table(page, last_result):
-    if last_result is not None:
-        def on_result(e, last_result):
+def download_table(page, state):
+    if state.last_result is not None:
+        def on_result(e, state):
             if e.path:
-                msg = save_excel(e, last_result)
+                msg = save_excel(e, state)
                 snack_bar = ft.SnackBar(ft.Text(msg))
                 snack_bar.open = True
                 page.update()

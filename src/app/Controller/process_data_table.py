@@ -1,12 +1,11 @@
 import flet as ft
 import pandas as pd
-from utils import choice
 from Components.data_table import data_table
 from concurrent.futures import ThreadPoolExecutor
 from Services.vanna_service import VannaService
 from Services.database_config import DatabaseConfig
 from Components.progress_dialog import ProgressDialog
-
+from utils.app_state import AppState
 class TimeoutException(Exception):
     """Exception raised when a function call times out."""
     pass
@@ -19,7 +18,7 @@ class ProcessDataTable:
         self.file_picker = ft.FilePicker(on_result=self.view_preprocess_df)
         self.page.overlay.append(self.file_picker)
         self.page.add(self.file_picker)
-
+        self.state = AppState()
         self.excel_path = None
         self.items = []
         self.include_list = ft.ListView(expand=True, controls=[])
@@ -64,7 +63,7 @@ class ProcessDataTable:
                 DatabaseConfig.create_db(DatabaseConfig.credentials_path_database, DatabaseConfig.path_db_sqlite, self.excel_path, name_columns_include)
 
                 try:
-                    choice.record_choice(choice_llm)
+                    self.state.last_result = choice_llm
                     VannaService.train_model_vanna_from_openia(VannaService.path_db_sqlite, choice_llm)
                 except Exception as e:
                     print(f"Vanna training error: {e}")

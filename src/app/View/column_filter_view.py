@@ -3,18 +3,21 @@ from Controller.process_data_table import ProcessDataTable
 from Controller.process_data_table import ProcessDataTable
 from Components.DropDownComponentMenu import DropdownMenuComponent
 class ColumnFilterDialog():
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page, state):
         self.page = page
         self.process_data_table = ProcessDataTable(self.page)
         self.table = self.process_data_table.get_df()
         self.choice_llms = DropdownMenuComponent(
                     page=self.page,
-                    options=["mistral","llama","gemma3:4b", "smollm2:1.7b", "qwen3:4b"],
+                    options=["mistral:latest", "llama3.1:latest", "gemma3:4b", "smollm2:1.7b", "qwen3:4b"],
                     label="Escolha o modelo de IA",
-                    event_handler=lambda e: print(f"Modelo selecionado: {e.control.value}")
+                    event_handler=lambda e: self._update_choice(e, state)
                 ).dropdown_menu_view()
         
-
+    def _update_choice(self, e, state):
+        state.choice = e.control.value
+        print(f"Modelo selecionado: {e.control.value}")
+        
     def handle_button_click(self):
         self.process_data_table.resetLists()
         self.process_data_table.file_picker.pick_files(allow_multiple=False, allowed_extensions=["xlsx"])

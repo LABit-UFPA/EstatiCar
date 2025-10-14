@@ -1,7 +1,7 @@
 from Controller.load_credentials import load_credentials
 
 from Services.qdrant_client import client
-from Services.ollama_mistral_service import OllamaService
+from Services.ollama_service import OllamaService
 
 class VannaService:
     credentials_path_database = load_credentials()

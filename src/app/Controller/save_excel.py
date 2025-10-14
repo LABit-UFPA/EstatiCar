@@ -2,14 +2,14 @@ import os
 import subprocess
 import pandas as pd
 
-def save_excel(e, last_result):
+def save_excel(e, state):
     try:
         save_path = f"{e.path}.xlsx"
-        last_result.to_excel(save_path, index=False)
+        state.last_result.to_excel(save_path, index=False)
         dir_path = os.path.dirname(save_path)
-        if os.name == 'nt':  # Windows
+        if os.name == 'nt':
             os.startfile(dir_path)
-        else:  # Linux
+        else:
             subprocess.Popen(["xdg-open", dir_path])
 
         msg = "Tabela salva com sucesso."

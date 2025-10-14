@@ -1,5 +1,5 @@
 from Services.qdrant_client import client
-from Services.ollama_mistral_service import OllamaService
+from Services.ollama_service import OllamaService
 
 def deleteTrainData(model):
         vn = OllamaService(config={'client': client, 'model': model})
