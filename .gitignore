@@ -3,6 +3,7 @@ build
 dist
 qdrant_storage
 ollama_models
+storage
 
 __pycache__/
 *.pyc
