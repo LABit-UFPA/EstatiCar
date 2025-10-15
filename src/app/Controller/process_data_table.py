@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from Services.vanna_service import VannaService
 from Services.database_config import DatabaseConfig
 from Components.progress_dialog import ProgressDialog
-from utils.app_state import AppState
+from Utils.app_state import AppState
 class TimeoutException(Exception):
     """Exception raised when a function call times out."""
     pass

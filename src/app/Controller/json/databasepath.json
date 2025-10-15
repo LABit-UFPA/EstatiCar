@@ -1,4 +1,4 @@
 {
-    "path_db": "app_data_base.db",
+    "path_db": "/home/kimlima/Documents/GitHub/flechasql/src/app/Controller/db/app_data_base.db",
     "table_db": "app_data_base"
 }

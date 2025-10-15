@@ -10,7 +10,7 @@ a = Analysis(
     datas=[
         ('Controller/json/*.json', 'Controller/json/'),
         ('Controller/DB/*.db', 'Controller/DB/'),
-        ('assets/images/*', 'assets/images/'),
+        ('Assets/images/*', 'Assets/images/'),
         ('Components', 'Components/'),
         ('Services', 'Services/'),
         ('Themes', 'Themes/'),

@@ -6,7 +6,7 @@ class ThemeData:
         page.title = "FlechaSQL"
         page.theme_mode = "light"
         page.padding = 0
-        page.window.icon = "../assets/images/icon_pcpa_logo.ico"
+        page.window.icon = "../Assets/images/icon_pcpa_logo.ico"
         page.window.width = 1366
         page.window.height = 900
         page.window.min_width = 600

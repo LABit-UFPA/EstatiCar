@@ -11,7 +11,7 @@ from View.column_filter_view import ColumnFilterDialog
 from View.train_button import TrainButtonView
 from View.download_table_button import DownloadTableButtonView
 
-from utils.app_state import AppState
+from Utils.app_state import AppState
 from Components.progress_dialog import ProgressDialog
 from Components.errors_app import ErrorApp
 
