@@ -9,7 +9,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('Controller/json/*.json', 'Controller/json/'),
-        ('Controller/DB/*.db', 'Controller/DB/'),
+        ('Controller/db/*.db', 'Controller/db/'),
         ('Assets/images/*', 'Assets/images/'),
         ('Components', 'Components/'),
         ('Services', 'Services/'),
