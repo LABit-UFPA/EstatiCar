@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EstatiCar - Instalação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+            darkMode: 'class',
+        }
+    </script>
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        pre {
+            background-color: #1f2937;
+            color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .logo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 90px;
+            width: 90px;
+            background-color: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.75rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        /* Estilos para o modo escuro */
+        .dark .logo-placeholder {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #9ca3af;
+        }
+
+        .dark pre {
+            background-color: #111827;
+            color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen antialiased transition-colors duration-300">
+
+    <div class="container mx-auto max-w-4xl px-4 py-8 sm:py-16">
+
+        <header class="flex flex-col sm:flex-row justify-between sm:items-center mb-8 pb-4 border-b border-gray-300 dark:border-gray-700">
+            <h1 class="text-4xl font-bold text-blue-600 dark:text-blue-500">EstatiCar</h1>
+            <span class="text-lg text-gray-600 dark:text-gray-400 mt-2 sm:mt-0">Versão 1.5</span>
+        </header>
+
+        <main class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
+            <div class="p-6 sm:p-10">
+
+                <section class="mb-8">
+                    <h2 class="text-2xl font-semibold mb-5">Informações do Aplicativo</h2>
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nome</dt>
+                            <dd class="mt-1 text-lg font-semibold">EstatiCar</dd>
+                        </div>
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Versão</dt>
+                            <dd class="mt-1 text-lg font-semibold">1.5</dd>
+                        </div>
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Editor</dt>
+                            <dd class="mt-1 text-lg font-semibold">Laboratório de Inovação Tecnológica</dd>
+                        </div>
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Site do Editor</dt>
+                            <dd class="mt-1 text-lg font-semibold">
+                                <!-- Adicione o link do seu site aqui -->
+                                <a href="https://www.labit.ufpa.br/" class="text-blue-600 dark:text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">
+                                    https://www.labit.ufpa.br/  
+                                </a>
+                            </dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <section class="mb-10">
+                    <a href="https://github.com/kimlimalima/flechasql/releases/download/FlechaSQL-Registry/EstatiCar_Installer.exe" class="w-full flex items-center justify-center px-8 py-4 bg-blue-600 text-white text-xl font-bold rounded-xl shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transition-all duration-300 transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Instalar EstatiCar v1.5
+                    </a>
+                </section>
+
+                <section>
+                    <h2 class="text-2xl font-semibold mb-5">Tutorial de Pré-requisitos</h2>
+                    <p class="mb-8 text-gray-600 dark:text-gray-300">
+                        Antes de instalar o EstatiCar, você precisa configurar o ambiente com Docker e Ollama. Siga os passos abaixo:
+                    </p>
+
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-3">1. Instalar o Docker</h3>
+                            <p class="mb-4 text-gray-700 dark:text-gray-200">
+                                O Docker é essencial para o funcionamento do aplicativo. A forma mais fácil de instalá-lo é através do Docker Desktop.
+                            </p>
+                            <a href="https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe?utm_source=docker&utm_medium=webreferral&utm_campaign=dd-smartbutton&utm_location=module&_gl=1*1j81zvd*_gcl_au*MTk1NzI2OTY1Mi4xNzYxNTA0ODE2*_ga*NTgxNDg4Mzk2LjE3NjE1MDQ4MTc.*_ga_XJWPQMJYHQ*czE3NjE1MDQ4MTYkbzEkZzEkdDE3NjE1MDQ4NTckajE5JGwwJGgw" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                                Baixar o Docker Desktop para Windows &rarr;
+                            </a>
+                            <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                                Siga as instruções de instalação para Windows. Após a instalação, certifique-se de que o Docker Desktop está rodando corretamente.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-3">2. Instalar o Ollama e Modelos de IA</h3>
+                            <p class="mb-4 text-gray-700 dark:text-gray-200">
+                                O Ollama permite rodar modelos de linguagem (como Mistral e SmolLM) localmente na sua máquina.
+                            </p>
+                            <a href="https://ollama.com/download/OllamaSetup.exe" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                                Baixar o Ollama para Windows &rarr;
+                            </a>
+                            <p class="mt-4 mb-4 text-gray-700 dark:text-gray-200">
+                                Após instalar o Ollama, abra seu terminal (Prompt de Comando, PowerShell ou Terminal) e execute os seguintes comandos para baixar os modelos necessários:
+                            </p>
+                            <pre><code class="language-bash">ollama run mistral:latest</code></pre>
+                            <pre class="mt-3"><code class="language-bash">ollama run smollm2:1.7b</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-3">3. Rodar o Docker Compose</h3>
+                            <p class="mb-4 text-gray-700 dark:text-gray-200">
+                                O pacote de instalação do EstatiCar (que você baixa no botão "Instalar" acima) incluirá um arquivo chamado <code class="bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded-md text-sm">docker-compose.yml</code>.
+                            </p>
+                            <p class="mb-4 text-gray-700 dark:text-gray-200">
+                                1. Navegue pelo terminal até a pasta onde você extraiu os arquivos de instalação. Padrão: "C:/Program Files (x86)/EstatiCar"
+                                <br>
+                                2. Execute o comando abaixo para iniciar o serviço do EstatiCar:
+                            </p>
+                            <pre><code class="language-bash">docker compose up</code></pre>
+                            <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                                Após alguns instantes, o aplicativo EstatiCar estará pronto para ser executado.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <footer class="mt-16">
+            <h2 class="text-xl font-semibold text-center text-gray-700 dark:text-gray-300 mb-8">
+                Apoio
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 max-w-3xl mx-auto">
+                <img class="logo-placeholder" src="..//src//app//Assets//images//capes_logo.jpg" alt="Coordenação de Aperfeiçoamento de Pessoal de Nível Superior">
+                <img class="logo-placeholder" src="..//src//app//Assets//images//ufpa_logo.png" alt="Universidade Federal do Pará">
+                <img class="logo-placeholder" src="..//src//app//Assets//images//ppgsp_logo.png" alt="Programa de Pós-Graduação em Segurança Pública - PPGSP">
+                <img class="logo-placeholder" src="..//src//app//Assets//images//lab_logo.png" alt="Laboratório de Inovação Tecnológica - LABit">
+                <img class="logo-placeholder sm:col-start-2 md:col-start-auto" style="width: 75px;" src="..//src//app//Assets//images//pcpa_logo.png" alt="Polícia Civil do Estado do Pará">
+                <img class="logo-placeholder col-start-auto md:col-start-auto" src="..//src//app//Assets//images//logo-siac.png" alt="Secretaria de Segurança Pública e Defesa Social do Pará">
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
