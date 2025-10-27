@@ -1,3 +1,4 @@
+import platform
 import flet as ft
 
 from Themes.themes_data import ThemeData
@@ -43,6 +44,16 @@ def main(page: ft.Page):
     page.file_picker = file_picker
     page.add(file_picker)
 
+    def on_close_handler(e):
+        print("Aplicação foi fechada!")
+        if platform.system() == "Windows":
+            from Services.start_qdrant_windows import StartQdrantWindows as QdrantManager
+        else:
+            from Services.start_qdrant_linux import StartQdrantLinux as QdrantManager        
+        qdrant = QdrantManager()
+        qdrant.stop()    
+    page.on_close = on_close_handler
+
     page.add(
         ft.Stack(
             controls=[
@@ -83,4 +94,4 @@ def main(page: ft.Page):
         )
     )
 
-ft.app(target=main)
+ft.app(target=main, view=ft.AppView.FLET_APP)
