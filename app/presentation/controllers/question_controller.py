@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 import flet as ft
 import pandas as pd
 
@@ -34,10 +35,12 @@ class QuestionController:
         if not prompt or not prompt.strip():
             return
 
-        # Show progress dialog
-        self._page.dialog = self._progress
-        self._progress.open = True
-        self._page.update()
+        # Disable UI and show progress notification
+        print("Mostrando progress notification da pergunta...")
+        if hasattr(self._page, 'set_ui_busy'):
+            self._page.set_ui_busy(True)
+        if hasattr(self._page, 'show_notification'):
+            self._page.show_notification("⏳ Processando sua pergunta...", ft.colors.BLUE, duration=300)
 
         result_data = None
         show_error = False
@@ -58,10 +61,12 @@ class QuestionController:
             traceback.print_exc()
             show_error = True
         finally:
-            # Always close dialog
-            print("Fechando progress dialog da pergunta...")
-            self._progress.open = False
-            self._page.dialog = None
+            # Re-enable UI and hide notification
+            print("Finalizando processamento da pergunta...")
+            if hasattr(self._page, 'set_ui_busy'):
+                self._page.set_ui_busy(False)
+            if hasattr(self._page, 'hide_notification'):
+                self._page.hide_notification()
             
             if result_data:
                 table = build_data_table(result_data.data)
@@ -76,5 +81,5 @@ class QuestionController:
                 self._page.update()
                 print("Page atualizada com sucesso")
             elif show_error:
-                self._page.update()
                 self._error.show()
+                print("Error dialog mostrado")

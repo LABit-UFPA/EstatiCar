@@ -64,11 +64,13 @@ class ErrorDialog:
         )
 
     def show(self) -> None:
-        self._page.dialog = self._dialog
-        self._dialog.open = True
-        self._page.update()
+        # Use inline notification for web compatibility
+        if hasattr(self._page, 'show_notification'):
+            self._page.show_notification("❌ Erro ao realizar a pesquisa!", ft.colors.RED, duration=5)
+        print("Error notification mostrado")
 
     def close(self) -> None:
-        self._dialog.open = False
-        self._page.dialog = None
-        self._page.update()
+        if self._page.snack_bar:
+            self._page.snack_bar.open = False
+            self._page.update()
+

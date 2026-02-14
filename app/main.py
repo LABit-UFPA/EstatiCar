@@ -68,6 +68,7 @@ def main(page: ft.Page) -> None:
         # Add dialogs to overlay so they can be displayed
         page.overlay.append(progress_dialog)
         page.overlay.append(error_dialog._dialog)
+        page.update()  # Force update after adding overlays
 
         card_view = CardContentView(initial_text="O Resultado será mostrado aqui...")
         card_content = card_view.build()
@@ -101,6 +102,12 @@ def main(page: ft.Page) -> None:
             question_ctrl.handle(e, input_field_view.control)
 
         input_field_view = InputFieldView(on_submit=on_question, page=page)
+        
+        # Create buttons (will be referenced later for disabling)
+        search_button = ft.IconButton(
+            icon=ft.Icons.SEARCH,
+            on_click=on_question,
+        )
 
         filter_view = ColumnFilterView(
             page=page,
@@ -113,11 +120,66 @@ def main(page: ft.Page) -> None:
         train_button = build_train_button(on_click=filter_view.open)
         download_button = build_download_button(on_click=lambda e: download_ctrl.handle(e))
         footer = build_footer()
+        
+        # ── UI Control Manager ───────────────────────────────────────────────
+        def set_ui_busy(busy: bool):
+            """Enable/disable UI controls during processing"""
+            input_field_view.control.disabled = busy
+            search_button.disabled = busy
+            train_button.disabled = busy
+            download_button.disabled = busy
+            page.update()
+        
+        # Store in page for access from controllers
+        page.set_ui_busy = set_ui_busy
 
         # ── File picker (for save dialog) ────────────────────────────────────
         file_picker = ft.FilePicker(on_result=None)
         page.file_picker = file_picker
         page.add(file_picker)
+        
+        # ── Notification container (web-compatible) ──────────────────────────
+        notification_container = ft.Container(
+            height=0,
+            animate=ft.animation.Animation(300, ft.AnimationCurve.EASE_OUT),
+            content=None
+        )
+        
+        def show_notification(message: str, bgcolor: str = None, duration: int = 3):
+            """Show inline notification that works in web mode"""
+            if bgcolor is None:
+                bgcolor = ft.colors.BLUE
+            
+            notification_container.content = ft.Container(
+                content=ft.Text(message, color=ft.colors.WHITE, size=14, weight=ft.FontWeight.BOLD),
+                bgcolor=bgcolor,
+                padding=10,
+                border_radius=8,
+            )
+            notification_container.height = 50
+            page.update()
+            
+            # Auto-hide after duration (unless it's a long-running operation indicator)
+            if duration < 100:  # Only auto-hide short notifications
+                import threading
+                def hide():
+                    import time
+                    time.sleep(duration)
+                    notification_container.height = 0
+                    notification_container.content = None
+                    page.update()
+                
+                threading.Thread(target=hide, daemon=True).start()
+        
+        def hide_notification():
+            """Manually hide notification"""
+            notification_container.height = 0
+            notification_container.content = None
+            page.update()
+        
+        # Store in page for access from controllers
+        page.show_notification = show_notification
+        page.hide_notification = hide_notification
 
         # ── Page layout ──────────────────────────────────────────────────────
         page.add(
@@ -130,14 +192,12 @@ def main(page: ft.Page) -> None:
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
+                        notification_container,  # Add notification container at top
                         ft.Row(
                             alignment=ft.MainAxisAlignment.CENTER,
                             controls=[
                                 input_field_view.control,
-                                ft.IconButton(
-                                    icon=ft.Icons.SEARCH,
-                                    on_click=on_question,
-                                ),
+                                search_button,
                             ],
                         ),
                         ft.SelectionArea(tabs),
@@ -169,4 +229,18 @@ def main(page: ft.Page) -> None:
         page.update()
 
 
-ft.app(target=main, view=ft.AppView.WEB_BROWSER)
+import os
+upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+os.makedirs(upload_directory, exist_ok=True)
+
+# Set secret key for uploads via environment variable
+os.environ["FLET_SECRET_KEY"] = "flechasql-secret-key-2026"
+
+# Use WEB_BROWSER mode with custom modal overlays (no native dialogs)
+ft.app(
+    target=main, 
+    view=ft.AppView.WEB_BROWSER,
+    assets_dir="Assets",
+    upload_dir=upload_directory,
+    port=8080
+)

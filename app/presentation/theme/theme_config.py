@@ -10,11 +10,7 @@ def apply_theme(page: ft.Page) -> None:
     page.theme_mode = "light"
     page.padding = 0
     
-    # Try to find icon - comment out if file doesn't exist to avoid errors
-    icon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "Assets", "images", "icon_pcpa_logo.ico")
-    if os.path.exists(icon_path):
-        page.window.icon = icon_path
-    
+    # Window configuration (only relevant for desktop)
     page.window.width = 1366
     page.window.height = 900
     page.window.min_width = 600

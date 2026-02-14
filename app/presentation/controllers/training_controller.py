@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 import flet as ft
 
 from domain.use_cases.train_model import TrainModelUseCase
@@ -25,9 +26,12 @@ class TrainingController:
         self._progress = progress_dialog
 
     def handle(self, excel_path: str, columns: list[str], model: str) -> None:
-        self._page.dialog = self._progress
-        self._progress.open = True
-        self._page.update()
+        # Disable UI and show progress notification
+        print("Mostrando progress notification do treinamento...")
+        if hasattr(self._page, 'set_ui_busy'):
+            self._page.set_ui_busy(True)
+        if hasattr(self._page, 'show_notification'):
+            self._page.show_notification("⏳ Treinando o modelo...", ft.colors.BLUE, duration=300)
 
         try:
             self._ai_adapter.set_model(model)
@@ -36,8 +40,15 @@ class TrainingController:
         except Exception as ex:
             print(f"Error in training: {ex}")
         finally:
-            self._progress.open = False
-            self._page.dialog = None
-            self._page.snack_bar = ft.SnackBar(ft.Text("Modelo treinado com sucesso!"))
-            self._page.snack_bar.open = True
-            self._page.update()
+            print("Finalizando treinamento...")
+            # Re-enable UI
+            if hasattr(self._page, 'set_ui_busy'):
+                self._page.set_ui_busy(False)
+            # Hide processing notification
+            if hasattr(self._page, 'hide_notification'):
+                self._page.hide_notification()
+            # Show success notification
+            import time
+            time.sleep(0.1)  # Small delay to ensure processing notification is hidden
+            if hasattr(self._page, 'show_notification'):
+                self._page.show_notification("✅ Modelo treinado com sucesso!", ft.colors.GREEN, duration=5)
