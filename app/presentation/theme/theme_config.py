@@ -22,7 +22,6 @@ def apply_theme(page: ft.Page) -> None:
     page.window.resizable = True
     page.window.maximizable = True
     page.window.maximized = True
-    page.window.center()
 
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER

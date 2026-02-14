@@ -28,7 +28,7 @@ class ErrorDialog:
             content=ft.Container(
                 content=ft.Column(
                     [
-                        ft.Icon(ft.icons.ERROR_OUTLINE, size=48, color=ft.colors.RED),
+                        ft.Icon(ft.Icons.ERROR_OUTLINE, size=48, color=ft.colors.RED),
                         ft.Text(
                             "Erro ao realizar a pesquisa!",
                             style=ft.TextStyle(

@@ -135,7 +135,7 @@ def main(page: ft.Page) -> None:
                             controls=[
                                 input_field_view.control,
                                 ft.IconButton(
-                                    icon=ft.icons.SEARCH,
+                                    icon=ft.Icons.SEARCH,
                                     on_click=on_question,
                                 ),
                             ],
@@ -169,4 +169,4 @@ def main(page: ft.Page) -> None:
         page.update()
 
 
-ft.app(target=main)
+ft.app(target=main, view=ft.AppView.WEB_BROWSER)

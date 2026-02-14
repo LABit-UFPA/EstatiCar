@@ -29,7 +29,7 @@ class TabsView:
                 tabs=[
                     ft.Tab(
                         text="Tabela",
-                        icon=ft.icons.TABLE_VIEW,
+                        icon=ft.Icons.TABLE_VIEW,
                         content=ft.Container(
                             content=ft.Column(
                                 scroll="ADAPTIVE",
@@ -41,7 +41,7 @@ class TabsView:
                     ),
                     ft.Tab(
                         text="Query",
-                        icon=ft.icons.MANAGE_SEARCH_OUTLINED,
+                        icon=ft.Icons.MANAGE_SEARCH_OUTLINED,
                         content=ft.Container(
                             content=ft.Column(
                                 scroll="ADAPTIVE",
