@@ -76,36 +76,33 @@ class DownloadController:
                 threading.Thread(target=close_later, daemon=True).start()
             
             download_button = ft.ElevatedButton(
-                "📥 Baixar Arquivo",
+                "📥 Baixar",
                 on_click=trigger_download,
                 style=ft.ButtonStyle(
                     bgcolor=ft.colors.GREEN_400,
                     color=ft.colors.WHITE,
                 ),
-                height=50,
-                width=300,
+                height=40,
+                width=200,
             )
             
             # Create modal container
             modal_content = ft.Container(
                 content=ft.Column([
-                    ft.Text("✅ Arquivo pronto!", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.GREEN),
-                    ft.Text(filename, size=14, italic=True),
-                    ft.Divider(),
+                    ft.Text("✅ Arquivo pronto!", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.GREEN),
                     download_button,
-                    ft.Text("(Download para sua pasta Downloads)", size=12, italic=True, color=ft.colors.GREY_700),
-                    ft.Divider(),
                     ft.TextButton(
                         "Fechar",
                         on_click=lambda _: self._close_download_modal(),
                     )
                 ], 
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=15),
-                padding=30,
+                spacing=8),
+                padding=15,
                 bgcolor=ft.colors.WHITE,
                 border_radius=10,
-                width=500,
+                width=300,
+                height=150,
             )
             
             # Create backdrop
