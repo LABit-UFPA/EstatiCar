@@ -136,7 +136,7 @@ def main(page: ft.Page) -> None:
         # ── File picker (for save dialog) ────────────────────────────────────
         file_picker = ft.FilePicker(on_result=None)
         page.file_picker = file_picker
-        page.add(file_picker)
+        page.overlay.append(file_picker)
         
         # ── Notification container (web-compatible) ──────────────────────────
         notification_container = ft.Container(
@@ -230,8 +230,14 @@ def main(page: ft.Page) -> None:
 
 
 import os
+from infrastructure.adapters.download_server import DownloadServer
+
 upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
 os.makedirs(upload_directory, exist_ok=True)
+
+# Start download server (Flask) on port 8081
+download_server = DownloadServer(upload_directory, port=8081)
+download_server.start()
 
 # Set secret key for uploads via environment variable
 os.environ["FLET_SECRET_KEY"] = "flechasql-secret-key-2026"

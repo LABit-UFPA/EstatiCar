@@ -16,6 +16,7 @@ AVAILABLE_MODELS = [
     "gemma3:4b",
     "smollm2:1.7b",
     "qwen3:4b",
+    "gemma3:27b"
 ]
 
 
