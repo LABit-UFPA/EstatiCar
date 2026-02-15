@@ -325,5 +325,7 @@ ft.app(
     view=ft.AppView.WEB_BROWSER,
     assets_dir="Assets",
     upload_dir=upload_directory,
-    port=8080
+    port=8080,
+    web_renderer=ft.WebRenderer.CANVAS_KIT,
+    route_url_strategy="hash",
 )
