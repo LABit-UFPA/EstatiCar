@@ -1,9 +1,11 @@
 """Flask server for serving file downloads with proper headers."""
 
-from flask import Flask, send_file, abort
+from flask import Flask, send_file, abort, after_this_request
 import os
 import threading
 import logging
+import time
+from datetime import datetime, timedelta
 
 
 class DownloadServer:
@@ -20,13 +22,14 @@ class DownloadServer:
         
         self._setup_routes()
         self.server_thread = None
+        self.cleanup_thread = None
     
     def _setup_routes(self):
         """Setup Flask routes."""
         
         @self.app.route('/download/<filename>')
         def download_file(filename):
-            """Serve file with download headers."""
+            """Serve file with download headers and delete after sending."""
             filepath = os.path.join(self.upload_dir, filename)
             
             print(f"[Flask] Requisição de download: {filename}")
@@ -44,6 +47,22 @@ class DownloadServer:
             
             print(f"[Flask] Arquivo encontrado! Enviando: {filename}")
             
+            # Delete file after response is sent
+            @after_this_request
+            def cleanup_file(response):
+                try:
+                    # Small delay to ensure download completes
+                    def delayed_delete():
+                        time.sleep(2)
+                        if os.path.exists(filepath):
+                            os.remove(filepath)
+                            print(f"[Flask] ✓ Arquivo deletado após download: {filename}")
+                    
+                    threading.Thread(target=delayed_delete, daemon=True).start()
+                except Exception as e:
+                    print(f"[Flask] Erro ao deletar arquivo {filename}: {e}")
+                return response
+            
             # Send file with download headers (forces download in browser Downloads folder)
             return send_file(
                 filepath,
@@ -51,6 +70,32 @@ class DownloadServer:
                 download_name=filename,
                 mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
+    
+    def _cleanup_old_files(self, max_age_hours: int = 1):
+        """Remove arquivos mais antigos que max_age_hours."""
+        try:
+            now = datetime.now()
+            count = 0
+            for filename in os.listdir(self.upload_dir):
+                filepath = os.path.join(self.upload_dir, filename)
+                if os.path.isfile(filepath):
+                    # Check file age
+                    file_time = datetime.fromtimestamp(os.path.getmtime(filepath))
+                    if now - file_time > timedelta(hours=max_age_hours):
+                        os.remove(filepath)
+                        count += 1
+                        print(f"[Flask Cleanup] Removido arquivo antigo: {filename}")
+            
+            if count > 0:
+                print(f"[Flask Cleanup] {count} arquivo(s) antigo(s) removido(s)")
+        except Exception as e:
+            print(f"[Flask Cleanup] Erro na limpeza: {e}")
+    
+    def _periodic_cleanup(self, interval_minutes: int = 30, max_age_hours: int = 1):
+        """Executa limpeza periódica de arquivos antigos."""
+        while True:
+            time.sleep(interval_minutes * 60)
+            self._cleanup_old_files(max_age_hours)
     
     def start(self):
         """Start Flask server in background thread."""
@@ -64,7 +109,15 @@ class DownloadServer:
         self.server_thread = threading.Thread(target=run_server, daemon=True)
         self.server_thread.start()
         
+        # Start periodic cleanup thread (clean files older than 1 hour every 30 minutes)
+        self.cleanup_thread = threading.Thread(
+            target=self._periodic_cleanup, 
+            args=(30, 1),  # Check every 30 min, remove files older than 1 hour
+            daemon=True
+        )
+        self.cleanup_thread.start()
+        
         # Wait a bit for server to start
-        import time
         time.sleep(0.5)
         print(f"[Flask] Servidor de download pronto!")
+        print(f"[Flask] Limpeza automática ativada (arquivos > 1 hora serão removidos)")
