@@ -3,7 +3,7 @@ import flet as ft
 class ThemeData:
     
     def __init__(self, page: ft.Page):
-        page.title = "FlechaSQL"
+        page.title = "EstatiCar"
         page.theme_mode = "light"
         page.padding = 0
         page.window.icon = "../Assets/images/icon_pcpa_logo.ico"
