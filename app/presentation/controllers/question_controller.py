@@ -71,11 +71,40 @@ class QuestionController:
             if result_data:
                 table = build_data_table(result_data.data)
                 self._card_content.controls = [
-                    ft.Text("Resultado da pesquisa: \n"),
+                    ft.Container(
+                        content=ft.Text(
+                            "Resultado da pesquisa:",
+                            size=16,
+                            weight=ft.FontWeight.W_600,
+                            color="#475569",
+                        ),
+                        margin=ft.margin.only(bottom=12),
+                    ),
                     table,
                 ]
                 self._query_content.controls = [
-                    ft.Text("Query utilizada para a pesquisa: \n\n" + result_data.sql),
+                    ft.Container(
+                        content=ft.Text(
+                            "Query utilizada para a pesquisa:",
+                            size=16,
+                            weight=ft.FontWeight.W_600,
+                            color="#475569",
+                        ),
+                        margin=ft.margin.only(bottom=12),
+                    ),
+                    ft.Container(
+                        content=ft.Text(
+                            result_data.sql,
+                            size=14,
+                            color="#1e293b",
+                            font_family="Courier New",
+                            selectable=True,
+                        ),
+                        bgcolor="#f8fafc",
+                        border=ft.border.all(1, "#e2e8f0"),
+                        border_radius=12,
+                        padding=ft.padding.all(20),
+                    ),
                 ]
                 self._card_content.update()
                 self._page.update()

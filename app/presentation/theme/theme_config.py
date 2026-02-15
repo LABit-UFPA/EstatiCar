@@ -5,10 +5,18 @@ import os
 
 
 def apply_theme(page: ft.Page) -> None:
-    """Apply the default EstatiCar theme to the page."""
+    """Apply the modern EstatiCar theme to the page."""
     page.title = "EstatiCar"
     page.theme_mode = "light"
     page.padding = 0
+    
+    # Modern color scheme
+    page.theme = ft.Theme(
+        color_scheme_seed="#6366f1",  # Indigo primary
+        use_material3=True,
+    )
+    
+    page.bgcolor = "#f8fafc"  # Soft light background
     
     # Window configuration (only relevant for desktop)
     page.window.width = 1366

@@ -324,101 +324,188 @@ class ColumnFilterView:
 
 
     def _build_modal_content(self) -> ft.Container:
-        # Search bar (initialize with current search query)
+        # Modern search bar
         search_field = ft.TextField(
-            label="🔍 Buscar coluna",
+            label="Buscar coluna",
             hint_text="Digite para filtrar...",
-            value=self._search_query,  # Restore search query if modal reopens
+            value=self._search_query,
             on_change=self._on_search_change,
-            border_radius=8,
+            border_radius=12,
             filled=True,
-            bgcolor=ft.colors.GREY_100,
-            # prefix_icon=ft.Icons.SEARCH,
+            bgcolor="#f8fafc",
+            border_color="#e2e8f0",
+            focused_border_color="#6366f1",
+            prefix_icon=ft.Icons.SEARCH_ROUNDED,
+            text_size=14,
         )
         
+        # Modern excluded columns container
         exclude_container = ft.Container(
             content=ft.Column([
-                ft.Text("Colunas Removidas:", size=16, weight=ft.FontWeight.BOLD, color="red600"),
-                ft.Container(self._exclude_list, border=ft.border.all(1), padding=10, height=150),
-            ]),
-            border=ft.border.all(2, ft.colors.RED),
-            padding=10,
+                ft.Row([
+                    ft.Icon(ft.Icons.REMOVE_CIRCLE_OUTLINE_ROUNDED, color="#ef4444", size=20),
+                    ft.Text("Colunas Removidas", size=15, weight=ft.FontWeight.W_600, color="#ef4444"),
+                ], spacing=8),
+                ft.Container(
+                    content=self._exclude_list,
+                    border=ft.border.all(2, "#fecaca"),
+                    border_radius=8,
+                    padding=12,
+                    height=150,
+                    bgcolor="#fef2f2",
+                ),
+            ], spacing=8),
+            padding=12,
             expand=1,
+            border_radius=12,
+            bgcolor="#ffffff",
         )
 
+        # Modern included columns container
         include_container = ft.Container(
             content=ft.Column([
-                ft.Text("Colunas Selecionadas:", size=16, weight=ft.FontWeight.BOLD, color="green600"),
-                ft.Container(self._include_list, border=ft.border.all(1), padding=10, height=150),
-            ]),
-            border=ft.border.all(2, ft.colors.GREEN),
-            padding=10,
+                ft.Row([
+                    ft.Icon(ft.Icons.CHECK_CIRCLE_OUTLINE_ROUNDED, color="#10b981", size=20),
+                    ft.Text("Colunas Selecionadas", size=15, weight=ft.FontWeight.W_600, color="#10b981"),
+                ], spacing=8),
+                ft.Container(
+                    content=self._include_list,
+                    border=ft.border.all(2, "#a7f3d0"),
+                    border_radius=8,
+                    padding=12,
+                    height=150,
+                    bgcolor="#f0fdf4",
+                ),
+            ], spacing=8),
+            padding=12,
             expand=1,
+            border_radius=12,
+            bgcolor="#ffffff",
         )
 
+        # Modern control buttons
         buttons = ft.Column([
-            ft.ElevatedButton("→", on_click=self._move_to_include),
-            ft.ElevatedButton(">>", on_click=self._move_all_to_include),
-            ft.ElevatedButton("<<", on_click=self._move_all_to_exclude),
-            ft.ElevatedButton("←", on_click=self._move_to_exclude),
-        ])
+            ft.IconButton(
+                icon=ft.Icons.ARROW_FORWARD_ROUNDED,
+                icon_color="#6366f1",
+                bgcolor="#eef2ff",
+                tooltip="Mover para selecionadas",
+                on_click=self._move_to_include,
+            ),
+            ft.IconButton(
+                icon=ft.Icons.DOUBLE_ARROW_ROUNDED,
+                icon_color="#6366f1",
+                bgcolor="#eef2ff",
+                tooltip="Mover todas para selecionadas",
+                on_click=self._move_all_to_include,
+            ),
+            ft.IconButton(
+                icon=ft.Icons.KEYBOARD_DOUBLE_ARROW_LEFT_ROUNDED,
+                icon_color="#6366f1",
+                bgcolor="#eef2ff",
+                tooltip="Mover todas para removidas",
+                on_click=self._move_all_to_exclude,
+            ),
+            ft.IconButton(
+                icon=ft.Icons.ARROW_BACK_ROUNDED,
+                icon_color="#6366f1",
+                bgcolor="#eef2ff",
+                tooltip="Mover para removidas",
+                on_click=self._move_to_exclude,
+            ),
+        ], spacing=8, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
         return ft.Container(
-            width=700,
-            height=650,  # Increased height for search bar
-            bgcolor=ft.colors.WHITE,
-            border_radius=12,
-            padding=20,
+            width=820,
+            height=700,
+            bgcolor="#ffffff",
+            border_radius=24,
+            padding=28,
             shadow=ft.BoxShadow(
-                blur_radius=30,
+                blur_radius=40,
                 spread_radius=0,
-                offset=ft.Offset(0, 5),
-                color="black26",
+                offset=ft.Offset(0, 8),
+                color="#00000026",
             ),
             content=ft.Column([
+                # Header
                 ft.Row([
-                    ft.Text("Filtrar Colunas", size=20, weight=ft.FontWeight.BOLD),
+                    ft.Text("Filtrar Colunas", size=24, weight=ft.FontWeight.BOLD, color="#1e293b"),
                     ft.IconButton(
-                        icon=ft.Icons.CLOSE,
+                        icon=ft.Icons.CLOSE_ROUNDED,
+                        icon_color="#64748b",
+                        bgcolor="#f1f5f9",
                         on_click=lambda _: self.close(),
                         tooltip="Fechar"
                     )
                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                ft.Divider(),
-                ft.FilledButton(
-                    style=ft.ButtonStyle(
-                        shape=ft.RoundedRectangleBorder(radius=10),
-                        side=ft.BorderSide(1, ft.colors.BLUE_ACCENT_100),
-                        elevation=2,
-                    ),
-                    text="Selecionar arquivo",
-                    height=50,
-                    width=260,
-                    on_click=lambda _: self._file_picker.pick_files(
-                        allow_multiple=False, allowed_extensions=["xlsx"]
+                
+                ft.Container(height=8),  # Spacer
+                
+                # File picker button
+                ft.Container(
+                    content=ft.FilledButton(
+                        style=ft.ButtonStyle(
+                            shape=ft.RoundedRectangleBorder(radius=12),
+                            bgcolor="#6366f1",
+                            color="#ffffff",
+                            padding=ft.padding.symmetric(horizontal=24, vertical=14),
+                            overlay_color={
+                                ft.ControlState.HOVERED: "#5558e3",
+                            },
+                        ),
+                        text="Selecionar arquivo",
+                        icon=ft.Icons.FOLDER_OPEN_ROUNDED,
+                        height=48,
+                        on_click=lambda _: self._file_picker.pick_files(
+                            allow_multiple=False, allowed_extensions=["xlsx"]
+                        ),
                     ),
                 ),
-                search_field,  # Add search bar here
-                ft.Row([exclude_container, buttons, include_container], expand=True),
-                ft.Text(
-                    "Escolha qual IA quer utilizar:",
-                    size=16,
-                    weight=ft.FontWeight.BOLD,
+                
+                ft.Container(height=8),  # Spacer
+                search_field,
+                
+                ft.Container(height=12),  # Spacer
+                
+                # Column lists with buttons
+                ft.Container(
+                    content=ft.Row([exclude_container, buttons, include_container], expand=True, spacing=12),
+                    expand=True,
                 ),
-                self._model_dropdown,
-                ft.Divider(),
+                
+                ft.Container(height=16),  # Spacer
+                
+                # AI model selector
+                ft.Column([
+                    ft.Text(
+                        "Escolha o modelo de IA:",
+                        size=15,
+                        weight=ft.FontWeight.W_600,
+                        color="#475569",
+                    ),
+                    self._model_dropdown,
+                ], spacing=8),
+                
+                ft.Divider(height=1, color="#e2e8f0"),
+                
+                # Action button
                 ft.Row([
                     ft.FilledButton(
                         style=ft.ButtonStyle(
-                            shape=ft.RoundedRectangleBorder(radius=10),
-                            side=ft.BorderSide(1, ft.colors.BLUE_ACCENT_100),
-                            elevation=2,
+                            shape=ft.RoundedRectangleBorder(radius=12),
+                            bgcolor="#10b981",
+                            color="#ffffff",
+                            padding=ft.padding.symmetric(horizontal=32, vertical=14),
+                            overlay_color={
+                                ft.ControlState.HOVERED: "#059669",
+                            },
                         ),
                         text="Realizar Treinamento",
-                        height=50,
-                        width=260,
+                        icon=ft.Icons.ROCKET_LAUNCH_ROUNDED,
+                        height=52,
                         on_click=lambda _: self._handle_train_click(),
                     )
                 ], alignment=ft.MainAxisAlignment.END)
-            ], spacing=10)
+            ], spacing=12)
         )

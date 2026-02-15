@@ -4,7 +4,7 @@ import flet as ft
 
 
 class ErrorDialog:
-    """Standardized error dialog component."""
+    """Modern standardized error dialog component."""
 
     def __init__(self, page: ft.Page) -> None:
         self._page = page
@@ -17,10 +17,13 @@ class ErrorDialog:
                     "Entendido",
                     on_click=lambda e: self.close(),
                     style=ft.ButtonStyle(
-                        color=ft.colors.WHITE,
-                        bgcolor=ft.colors.RED,
-                        padding=ft.padding.symmetric(horizontal=16, vertical=8),
-                        shape=ft.RoundedRectangleBorder(radius=8),
+                        color="#ffffff",
+                        bgcolor="#ef4444",
+                        padding=ft.padding.symmetric(horizontal=24, vertical=12),
+                        shape=ft.RoundedRectangleBorder(radius=10),
+                        overlay_color={
+                            ft.ControlState.HOVERED: "#dc2626",
+                        },
                     ),
                 )
             ],
@@ -28,37 +31,37 @@ class ErrorDialog:
             content=ft.Container(
                 content=ft.Column(
                     [
-                        ft.Icon(ft.Icons.ERROR_OUTLINE, size=48, color=ft.colors.RED),
+                        ft.Icon(ft.Icons.ERROR_OUTLINE_ROUNDED, size=56, color="#ef4444"),
                         ft.Text(
                             "Erro ao realizar a pesquisa!",
                             style=ft.TextStyle(
-                                size=18,
+                                size=20,
                                 weight=ft.FontWeight.BOLD,
-                                color=ft.colors.BLACK,
+                                color="#1e293b",
                             ),
                             text_align=ft.TextAlign.CENTER,
                         ),
                         ft.Text(
                             "Por favor, reformule a sua pesquisa.",
-                            style=ft.TextStyle(size=14, color=ft.colors.BLACK87),
+                            style=ft.TextStyle(size=15, color="#64748b"),
                             text_align=ft.TextAlign.CENTER,
                         ),
                     ],
-                    spacing=12,
+                    spacing=16,
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 ),
                 alignment=ft.alignment.center,
-                width=350,
-                height=200,
-                padding=ft.padding.all(16),
-                bgcolor=ft.colors.WHITE,
-                border_radius=12,
+                width=380,
+                height=220,
+                padding=ft.padding.all(24),
+                bgcolor="#ffffff",
+                border_radius=20,
                 shadow=ft.BoxShadow(
-                    blur_radius=10,
-                    spread_radius=1,
-                    offset=ft.Offset(0, 2),
-                    color=ft.colors.BLACK12,
+                    blur_radius=30,
+                    spread_radius=0,
+                    offset=ft.Offset(0, 8),
+                    color="#00000026",
                 ),
             ),
         )

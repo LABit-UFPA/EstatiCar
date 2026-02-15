@@ -121,14 +121,32 @@ def main(page: ft.Page) -> None:
 
         # ── Views ────────────────────────────────────────────────────────────
         def on_question(e):
-            question_ctrl.handle(e, input_field_view.control)
+            question_ctrl.handle(e, input_field_view.text_field)
 
         input_field_view = InputFieldView(on_submit=on_question, page=page)
         
-        # Create buttons (will be referenced later for disabling)
-        search_button = ft.IconButton(
-            icon=ft.Icons.SEARCH,
-            on_click=on_question,
+        # Modern search button
+        search_button = ft.Container(
+            content=ft.IconButton(
+                icon=ft.Icons.SEARCH_ROUNDED,
+                icon_color="#ffffff",
+                bgcolor="#6366f1",
+                icon_size=28,
+                on_click=on_question,
+                tooltip="Pesquisar",
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=14),
+                    overlay_color={
+                        ft.ControlState.HOVERED: "#5558e3",
+                    },
+                ),
+            ),
+            shadow=ft.BoxShadow(
+                blur_radius=8,
+                spread_radius=0,
+                offset=ft.Offset(0, 2),
+                color="#6366f133",
+            ),
         )
 
         filter_view = ColumnFilterView(
@@ -146,10 +164,17 @@ def main(page: ft.Page) -> None:
         # ── UI Control Manager ───────────────────────────────────────────────
         def set_ui_busy(busy: bool):
             """Enable/disable UI controls during processing"""
-            input_field_view.control.disabled = busy
-            search_button.disabled = busy
-            train_button.disabled = busy
-            download_button.disabled = busy
+            input_field_view.text_field.disabled = busy
+            search_button.content.disabled = busy  # Access IconButton inside Container
+            # Note: train_button and download_button are now Containers wrapping FilledButtons
+            if hasattr(train_button, 'content'):
+                train_button.content.disabled = busy
+            else:
+                train_button.disabled = busy
+            if hasattr(download_button, 'content'):
+                download_button.content.disabled = busy
+            else:
+                download_button.disabled = busy
             page.update()
         
         # Store in page for access from controllers
@@ -159,21 +184,38 @@ def main(page: ft.Page) -> None:
         notification_container = ft.Container(
             height=0,
             animate=ft.animation.Animation(300, ft.AnimationCurve.EASE_OUT),
-            content=None
+            content=None,
+            alignment=ft.alignment.top_center,
         )
         
         def show_notification(message: str, bgcolor: str = None, duration: int = 3):
-            """Show inline notification that works in web mode"""
+            """Show modern inline notification that works in web mode"""
             if bgcolor is None:
                 bgcolor = ft.colors.BLUE
             
+            # Map color names to hex values for consistency
+            color_map = {
+                ft.colors.GREEN: "#10b981",
+                ft.colors.RED: "#ef4444",
+                ft.colors.BLUE: "#6366f1",
+            }
+            
             notification_container.content = ft.Container(
-                content=ft.Text(message, color=ft.colors.WHITE, size=14, weight=ft.FontWeight.BOLD),
-                bgcolor=bgcolor,
-                padding=10,
-                border_radius=8,
+                content=ft.Row([
+                    ft.Icon(ft.Icons.INFO_ROUNDED, color="#ffffff", size=20),
+                    ft.Text(message, color="#ffffff", size=14, weight=ft.FontWeight.W_500),
+                ], spacing=12, alignment=ft.MainAxisAlignment.CENTER),
+                bgcolor=color_map.get(bgcolor, bgcolor),
+                padding=ft.padding.symmetric(horizontal=24, vertical=12),
+                border_radius=12,
+                shadow=ft.BoxShadow(
+                    blur_radius=12,
+                    spread_radius=0,
+                    offset=ft.Offset(0, 4),
+                    color="#00000026",
+                ),
             )
-            notification_container.height = 50
+            notification_container.height = 56
             page.update()
             
             # Auto-hide after duration (unless it's a long-running operation indicator)
@@ -203,25 +245,32 @@ def main(page: ft.Page) -> None:
             ft.Container(
                 height=page.window.height,
                 width=page.window.width,
-                padding=ft.padding.all(20),
+                padding=ft.padding.all(32),
                 alignment=ft.alignment.center,
                 content=ft.Column(
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=24,
                     controls=[
                         notification_container,  # Add notification container at top
+                        ft.Container(height=8),  # Extra spacing
                         ft.Row(
                             alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=16,
                             controls=[
                                 input_field_view.control,
                                 search_button,
                             ],
                         ),
+                        ft.Container(height=8),  # Extra spacing
                         ft.SelectionArea(tabs),
+                        ft.Container(height=8),  # Extra spacing
                         ft.Row(
                             alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=20,
                             controls=[train_button, download_button],
                         ),
+                        ft.Container(height=16),  # Extra spacing
                         footer,
                     ],
                 ),
