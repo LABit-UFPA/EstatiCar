@@ -10,6 +10,7 @@ Layers (inner → outer):
 """
 
 import flet as ft
+import os
 
 # -- Infrastructure (concrete implementations) --------------------------------
 from infrastructure.adapters.ollama_adapter import OllamaAdapter
@@ -50,7 +51,16 @@ def main(page: ft.Page) -> None:
 
         # ── Infrastructure adapters ──────────────────────────────────────────────
         config_adapter = JsonConfigAdapter()
-        ai_adapter = OllamaAdapter(model=state.choice)
+        
+        # Get service URLs from environment variables (defaults to localhost for dev)
+        qdrant_url = os.getenv("QDRANT_URL", "http://localhost:6333")
+        ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        ai_adapter = OllamaAdapter(
+            model=state.choice, 
+            qdrant_url=qdrant_url,
+            ollama_host=ollama_host
+        )
+        
         db_adapter = SQLiteAdapter()
         file_adapter = FileAdapter()
 
@@ -133,11 +143,6 @@ def main(page: ft.Page) -> None:
         # Store in page for access from controllers
         page.set_ui_busy = set_ui_busy
 
-        # ── File picker (for save dialog) ────────────────────────────────────
-        file_picker = ft.FilePicker(on_result=None)
-        page.file_picker = file_picker
-        page.overlay.append(file_picker)
-        
         # ── Notification container (web-compatible) ──────────────────────────
         notification_container = ft.Container(
             height=0,

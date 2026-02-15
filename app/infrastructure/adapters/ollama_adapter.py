@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from vanna.ollama import Ollama
@@ -21,16 +22,25 @@ class _OllamaQdrant(Qdrant_VectorStore, Ollama):
 class OllamaAdapter(AIModelPort):
     """Adapter that implements AIModelPort using Ollama + Qdrant."""
 
-    def __init__(self, model: str, qdrant_url: str = "http://localhost:6333") -> None:
+    def __init__(
+        self, 
+        model: str, 
+        qdrant_url: str = "http://localhost:6333",
+        ollama_host: str | None = None
+    ) -> None:
         self._model = model
+        self._ollama_host = ollama_host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
         self._client = QdrantClient(url=qdrant_url)
         self._vn: _OllamaQdrant | None = None
         self._ensure_instance()
 
     def _ensure_instance(self) -> None:
-        self._vn = _OllamaQdrant(
-            config={"client": self._client, "model": self._model}
-        )
+        config = {
+            "client": self._client, 
+            "model": self._model,
+            "ollama_host": self._ollama_host
+        }
+        self._vn = _OllamaQdrant(config=config)
 
     def set_model(self, model: str) -> None:
         """Switch to a different LLM model."""

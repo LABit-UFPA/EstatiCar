@@ -37,6 +37,7 @@ class ColumnFilterView:
 
         self._excel_path: str | None = None
         self._df: pd.DataFrame | None = None
+        self._is_modal_open = False  # Flag to prevent multiple opens
 
         self._include_list = ft.ListView(expand=True, controls=[])
         self._exclude_list = ft.ListView(expand=True, controls=[])
@@ -45,15 +46,22 @@ class ColumnFilterView:
             on_result=self._on_file_picked,
             on_upload=self._on_upload_complete
         )
-        self._page.overlay.append(self._file_picker)
+        # Only add FilePicker if not already in overlay
+        if self._file_picker not in self._page.overlay:
+            self._page.overlay.append(self._file_picker)
         
         # Create upload directory (needed for web mode)
         self._upload_dir = os.path.join(os.getcwd(), "uploads")
         os.makedirs(self._upload_dir, exist_ok=True)
         
         # Create modal overlay container (will be shown/hidden)
-        self._modal_container = ft.Container(visible=False)
-        self._page.overlay.append(self._modal_container)
+        self._modal_container = ft.Container(
+            visible=False,
+            content=None  # Initialize with no content
+        )
+        # Only add modal container if not already in overlay
+        if self._modal_container not in self._page.overlay:
+            self._page.overlay.append(self._modal_container)
         
         self._page.update()
 
@@ -238,17 +246,35 @@ class ColumnFilterView:
             ])
             self._modal_container.visible = True
             self._modal_container.expand = True
-            self._page.update()
-            print("Modal de filtro aberto com sucesso")
+            try:
+                self._page.update()
+                print("Modal de filtro aberto com sucesso")
+            except Exception as update_error:
+                print(f"Erro ao atualizar página após abrir modal: {update_error}")
+                # Tentar recuperar fechando o modal
+                self.close()
+                raise
         except Exception as e:
             print(f"Erro ao abrir modal: {e}")
             import traceback
             traceback.print_exc()
+            # Garantir que modal está fechado em caso de erro
+            self._modal_container.visible = False
+            self._modal_container.content = None
+            try:
+                self._page.update()
+            except:
+                pass
     
     def close(self) -> None:
         """Close the modal"""
+        self._is_modal_open = False
         self._modal_container.visible = False
+        self._modal_container.expand = False
+        # Clear modal content to prevent visual bugs
+        self._modal_container.content = None
         self._page.update()
+        print("Modal fechado e limpo")
 
 
     def _build_modal_content(self) -> ft.Container:
