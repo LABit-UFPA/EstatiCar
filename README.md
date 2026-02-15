@@ -1,4 +1,4 @@
-# flechasql
+# EstatiCar
 
 ## ⚠️ Informações sobre as Branches
 
