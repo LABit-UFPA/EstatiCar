@@ -49,14 +49,55 @@ class DownloadController:
             print(f"Arquivo salvo: {msg}")
             print(f"Arquivo final: {filepath}.xlsx")
             
-            # Use Flask download server URL (port 8081) with proper download headers
-            download_url = f"http://127.0.0.1:8081/download/{filename}"
+            # Build download URL - use relative URL based on current page host
+            # Extract hostname from page URL or use localhost for desktop mode
+            page_url = getattr(self._page, 'url', 'http://localhost:8080')
+            if '://' in page_url:
+                protocol_host = page_url.split('://', 1)[1].split('/', 1)[0]
+                # Replace port with 8081 (Flask server port)
+                if ':' in protocol_host:
+                    host = protocol_host.split(':')[0]
+                else:
+                    host = protocol_host
+            else:
+                host = 'localhost'
             
-            # Create download button that uses the Flask endpoint
+            download_url = f"http://{host}:8081/download/{filename}"
+            print(f"URL de download: {download_url}")
+            
+            # Create download button that triggers download without opening new tab
             def trigger_download(e):
-                # Launch URL - Flask server will force download without opening new window
                 print(f"Baixando arquivo via Flask: {download_url}")
-                self._page.launch_url(download_url)
+                
+                # Use HTML link with download attribute - works better in web mode
+                # Create a hidden link, click it programmatically, then remove it
+                js_code = f"""
+                (function() {{
+                    var link = document.createElement('a');
+                    link.href = '{download_url}';
+                    link.download = '{filename}';
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(function() {{
+                        document.body.removeChild(link);
+                    }}, 100);
+                }})();
+                """
+                
+                try:
+                    # Try using page.js to execute JavaScript
+                    if hasattr(self._page, 'js'):
+                        self._page.js(js_code)
+                        print("Download via JavaScript executado")
+                    else:
+                        # Fallback: use window.open with _self target (replaces current page temporarily)
+                        print("JavaScript não disponível, usando launch_url")
+                        self._page.launch_url(download_url)
+                except Exception as js_err:
+                    print(f"Erro ao executar JavaScript: {js_err}")
+                    # Fallback: use launch_url
+                    self._page.launch_url(download_url)
                 
                 # Show success notification
                 if hasattr(self._page, 'show_notification'):
@@ -70,13 +111,13 @@ class DownloadController:
                 import threading
                 def close_later():
                     import time
-                    time.sleep(0.5)
+                    time.sleep(1.0)
                     self._close_download_modal()
                 
                 threading.Thread(target=close_later, daemon=True).start()
             
             download_button = ft.ElevatedButton(
-                "📥 Baixar",
+                "📥 Baixar Arquivo",
                 on_click=trigger_download,
                 style=ft.ButtonStyle(
                     bgcolor=ft.colors.GREEN_400,
@@ -89,7 +130,9 @@ class DownloadController:
             # Create modal container
             modal_content = ft.Container(
                 content=ft.Column([
-                    ft.Text("✅ Arquivo pronto!", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.GREEN),
+                    ft.Text("✅ Arquivo pronto!", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREEN),
+                    ft.Text(filename, size=12, color=ft.colors.GREY_700),
+                    ft.Divider(),
                     download_button,
                     ft.TextButton(
                         "Fechar",
@@ -97,12 +140,12 @@ class DownloadController:
                     )
                 ], 
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=8),
-                padding=15,
+                spacing=10),
+                padding=20,
                 bgcolor=ft.colors.WHITE,
                 border_radius=10,
-                width=300,
-                height=150,
+                width=320,
+                height=200,
             )
             
             # Create backdrop

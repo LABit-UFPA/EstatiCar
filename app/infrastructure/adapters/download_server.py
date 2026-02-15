@@ -57,8 +57,9 @@ class DownloadServer:
         def run_server():
             print(f"[Flask] Download server iniciando na porta {self.port}")
             print(f"[Flask] Servindo arquivos de: {self.upload_dir}")
-            print(f"[Flask] URL base: http://127.0.0.1:{self.port}/download/")
-            self.app.run(host='127.0.0.1', port=self.port, debug=False, use_reloader=False, threaded=True)
+            print(f"[Flask] URL base: http://0.0.0.0:{self.port}/download/")
+            # Listen on 0.0.0.0 to accept connections from outside container
+            self.app.run(host='0.0.0.0', port=self.port, debug=False, use_reloader=False, threaded=True)
         
         self.server_thread = threading.Thread(target=run_server, daemon=True)
         self.server_thread.start()
