@@ -8,7 +8,7 @@ import flet as ft
 def build_train_button(on_click: Callable) -> ft.FilledButton:
     """Build the 'Adicionar Arquivo' button."""
     def handle_click(e):
-        print("Botão 'Adicionar Arquivo' clicado")
+        print("[PROCESSING] Add file button clicked")
         on_click()
     
     return ft.FilledButton(

@@ -20,9 +20,9 @@ class DownloadController:
         self._state = state
 
     def handle(self, e=None) -> None:
-        print("Botão 'Salvar Tabela' clicado")
+        print("[PROCESSING] Save table button clicked")
         if self._state.last_result is not None:
-            print(f"Resultado encontrado, salvando dados...")
+            print(f"[PROCESSING] Result found, saving data...")
             
             import os
             from datetime import datetime
@@ -43,11 +43,11 @@ class DownloadController:
             # Use case adds .xlsx, so remove it from the path
             filepath = os.path.join(upload_dir, f"resultado_{timestamp}")
             
-            print(f"Salvando em: {filepath} (use case adicionará .xlsx)")
+            print(f"[PROCESSING] Saving to: {filepath} (use case will add .xlsx)")
             # Don't open folder in web mode (open_folder=False)
             msg = self._use_case.execute(self._state.last_result, filepath, open_folder=False)
-            print(f"Arquivo salvo: {msg}")
-            print(f"Arquivo final: {filepath}.xlsx")
+            print(f"[SUCCESS] File saved: {msg}")
+            print(f"[PROCESSING] Final file: {filepath}.xlsx")
             
             # Build download URL - use relative URL based on current page host
             # Extract hostname from page URL or use localhost for desktop mode
@@ -63,11 +63,11 @@ class DownloadController:
                 host = 'localhost'
             
             download_url = f"http://{host}:8081/download/{filename}"
-            print(f"URL de download: {download_url}")
+            print(f"[PROCESSING] Download URL: {download_url}")
             
             # Create download button that triggers download without opening new tab
             def trigger_download(e):
-                print(f"Baixando arquivo via Flask: {download_url}")
+                print(f"[PROCESSING] Downloading file via Flask: {download_url}")
                 
                 # Use HTML link with download attribute - works better in web mode
                 # Create a hidden link, click it programmatically, then remove it
@@ -89,13 +89,13 @@ class DownloadController:
                     # Try using page.js to execute JavaScript
                     if hasattr(self._page, 'js'):
                         self._page.js(js_code)
-                        print("Download via JavaScript executado")
+                        print("[SUCCESS] Download via JavaScript executed")
                     else:
                         # Fallback: use window.open with _self target (replaces current page temporarily)
-                        print("JavaScript não disponível, usando launch_url")
+                        print("[PROCESSING] JavaScript not available, using launch_url")
                         self._page.launch_url(download_url)
                 except Exception as js_err:
-                    print(f"Erro ao executar JavaScript: {js_err}")
+                    print(f"[ERROR] JavaScript execution failed: {js_err}")
                     # Fallback: use launch_url
                     self._page.launch_url(download_url)
                 
@@ -171,10 +171,10 @@ class DownloadController:
             self._page.overlay.append(self._download_modal)
             self._page.update()
             
-            print(f"Modal de download exibido. Usando Flask download server: {download_url}")
+            print(f"[SUCCESS] Download modal displayed - URL: {download_url}")
             
         else:
-            print("Nenhum resultado para salvar")
+            print("[ERROR] No result to save")
             if hasattr(self._page, 'show_notification'):
                 self._page.show_notification("❌ Nenhum resultado encontrado para salvar", ft.colors.RED, duration=5)
             self._page.update()

@@ -27,7 +27,7 @@ class TrainingController:
 
     def handle(self, excel_path: str, columns: list[str], model: str) -> None:
         # Disable UI and show progress notification
-        print("Mostrando progress notification do treinamento...")
+        print("[PROCESSING] Showing training progress notification...")
         if hasattr(self._page, 'set_ui_busy'):
             self._page.set_ui_busy(True)
         if hasattr(self._page, 'show_notification'):
@@ -38,9 +38,9 @@ class TrainingController:
             self._state.choice = model
             self._use_case.execute(excel_path, columns)
         except Exception as ex:
-            print(f"Error in training: {ex}")
+            print(f"[ERROR] Training failed: {ex}")
         finally:
-            print("Finalizando treinamento...")
+            print("[PROCESSING] Finalizing training...")
             # Re-enable UI
             if hasattr(self._page, 'set_ui_busy'):
                 self._page.set_ui_busy(False)

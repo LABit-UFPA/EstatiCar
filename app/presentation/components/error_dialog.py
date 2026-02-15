@@ -66,8 +66,8 @@ class ErrorDialog:
     def show(self) -> None:
         # Use inline notification for web compatibility
         if hasattr(self._page, 'show_notification'):
-            self._page.show_notification("❌ Erro ao realizar a pesquisa!", ft.colors.RED, duration=5)
-        print("Error notification mostrado")
+            self._page.show_notification("Erro ao realizar a pesquisa!", ft.colors.RED, duration=5)
+        print("[ERROR] Error notification shown")
 
     def close(self) -> None:
         if self._page.snack_bar:

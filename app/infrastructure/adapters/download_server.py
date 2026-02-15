@@ -32,20 +32,20 @@ class DownloadServer:
             """Serve file with download headers and delete after sending."""
             filepath = os.path.join(self.upload_dir, filename)
             
-            print(f"[Flask] Requisição de download: {filename}")
-            print(f"[Flask] Buscando arquivo em: {filepath}")
+            print(f"[PROCESSING] Download request received: {filename}")
+            print(f"[PROCESSING] Searching file at: {filepath}")
             
             if not os.path.exists(filepath):
-                print(f"[Flask] ERRO: Arquivo não encontrado: {filepath}")
-                print(f"[Flask] Arquivos disponíveis em {self.upload_dir}:")
+                print(f"[ERROR] File not found: {filepath}")
+                print(f"[PROCESSING] Available files in {self.upload_dir}:")
                 try:
                     for f in os.listdir(self.upload_dir):
                         print(f"  - {f}")
                 except Exception as e:
-                    print(f"[Flask] Erro ao listar diretório: {e}")
+                    print(f"[ERROR] Failed to list directory: {e}")
                 abort(404)
             
-            print(f"[Flask] Arquivo encontrado! Enviando: {filename}")
+            print(f"[SUCCESS] File found, sending: {filename}")
             
             # Delete file after response is sent
             @after_this_request
@@ -56,11 +56,11 @@ class DownloadServer:
                         time.sleep(2)
                         if os.path.exists(filepath):
                             os.remove(filepath)
-                            print(f"[Flask] ✓ Arquivo deletado após download: {filename}")
+                            print(f"[SUCCESS] File deleted after download: {filename}")
                     
                     threading.Thread(target=delayed_delete, daemon=True).start()
                 except Exception as e:
-                    print(f"[Flask] Erro ao deletar arquivo {filename}: {e}")
+                    print(f"[ERROR] Failed to delete file {filename}: {e}")
                 return response
             
             # Send file with download headers (forces download in browser Downloads folder)
@@ -84,12 +84,12 @@ class DownloadServer:
                     if now - file_time > timedelta(hours=max_age_hours):
                         os.remove(filepath)
                         count += 1
-                        print(f"[Flask Cleanup] Removido arquivo antigo: {filename}")
+                        print(f"[SUCCESS] Removed old file: {filename}")
             
             if count > 0:
-                print(f"[Flask Cleanup] {count} arquivo(s) antigo(s) removido(s)")
+                print(f"[SUCCESS] {count} old file(s) removed")
         except Exception as e:
-            print(f"[Flask Cleanup] Erro na limpeza: {e}")
+            print(f"[ERROR] Cleanup failed: {e}")
     
     def _periodic_cleanup(self, interval_minutes: int = 30, max_age_hours: int = 1):
         """Executa limpeza periódica de arquivos antigos."""
@@ -100,9 +100,9 @@ class DownloadServer:
     def start(self):
         """Start Flask server in background thread."""
         def run_server():
-            print(f"[Flask] Download server iniciando na porta {self.port}")
-            print(f"[Flask] Servindo arquivos de: {self.upload_dir}")
-            print(f"[Flask] URL base: http://0.0.0.0:{self.port}/download/")
+            print(f"[PROCESSING] Starting download server on port {self.port}")
+            print(f"[PROCESSING] Serving files from: {self.upload_dir}")
+            print(f"[PROCESSING] Base URL: http://0.0.0.0:{self.port}/download/")
             # Listen on 0.0.0.0 to accept connections from outside container
             self.app.run(host='0.0.0.0', port=self.port, debug=False, use_reloader=False, threaded=True)
         
@@ -119,5 +119,5 @@ class DownloadServer:
         
         # Wait a bit for server to start
         time.sleep(0.5)
-        print(f"[Flask] Servidor de download pronto!")
-        print(f"[Flask] Limpeza automática ativada (arquivos > 1 hora serão removidos)")
+        print(f"[SUCCESS] Download server ready")
+        print(f"[PROCESSING] Auto-cleanup enabled (files > 1 hour will be removed)")

@@ -220,7 +220,7 @@ def main(page: ft.Page) -> None:
         page.update()
 
     except Exception as e:
-        print(f"Error during initialization: {e}")
+        print(f"[ERROR] Initialization failed: {e}")
         import traceback
         traceback.print_exc()
         # Show error in the page
@@ -241,15 +241,15 @@ upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "upl
 os.makedirs(upload_directory, exist_ok=True)
 
 # Clean old files from previous runs
-print("[Startup] Limpando arquivos antigos da pasta uploads...")
+print("[PROCESSING] Cleaning old files from uploads folder...")
 try:
     for filename in os.listdir(upload_directory):
         filepath = os.path.join(upload_directory, filename)
         if os.path.isfile(filepath):
             os.remove(filepath)
-            print(f"[Startup] Removido: {filename}")
+            print(f"[SUCCESS] Removed file: {filename}")
 except Exception as e:
-    print(f"[Startup] Erro ao limpar uploads: {e}")
+    print(f"[ERROR] Failed to clean uploads: {e}")
 
 # Start download server (Flask) on port 8081
 download_server = DownloadServer(upload_directory, port=8081)

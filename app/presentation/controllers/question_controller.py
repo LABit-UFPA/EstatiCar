@@ -36,7 +36,7 @@ class QuestionController:
             return
 
         # Disable UI and show progress notification
-        print("Mostrando progress notification da pergunta...")
+        print("[PROCESSING] Showing question progress notification...")
         if hasattr(self._page, 'set_ui_busy'):
             self._page.set_ui_busy(True)
         if hasattr(self._page, 'show_notification'):
@@ -45,24 +45,24 @@ class QuestionController:
         result_data = None
         show_error = False
         try:
-            print(f"Executando pergunta: {prompt}")
+            print(f"[PROCESSING] Executing question: {prompt}")
             result = self._use_case.execute(prompt)
             self._state.last_result = result.data
-            print(f"Resultado recebido, is_empty: {result.is_empty}")
+            print(f"[SUCCESS] Result received, is_empty: {result.is_empty}")
 
             if not result.is_empty and isinstance(result.data, pd.DataFrame):
                 result_data = result
             else:
-                print("Resultado vazio, mostrando erro")
+                print("[ERROR] Empty result, showing error")
                 show_error = True
         except Exception as ex:
-            print(f"Error in question handler: {ex}")
+            print(f"[ERROR] Question handler failed: {ex}")
             import traceback
             traceback.print_exc()
             show_error = True
         finally:
             # Re-enable UI and hide notification
-            print("Finalizando processamento da pergunta...")
+            print("[PROCESSING] Finalizing question processing...")
             if hasattr(self._page, 'set_ui_busy'):
                 self._page.set_ui_busy(False)
             if hasattr(self._page, 'hide_notification'):
@@ -79,7 +79,7 @@ class QuestionController:
                 ]
                 self._card_content.update()
                 self._page.update()
-                print("Page atualizada com sucesso")
+                print("[SUCCESS] Page updated successfully")
             elif show_error:
                 self._error.show()
-                print("Error dialog mostrado")
+                print("[ERROR] Error dialog shown")
