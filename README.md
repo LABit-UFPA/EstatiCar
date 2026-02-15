@@ -6,11 +6,10 @@ Uma aplicação web intuitiva para consultar bancos de dados SQLite usando lingu
 
 - 🤖 Consultas em linguagem natural usando modelos LLM (via Ollama)
 - 🗄️ Suporte a bancos de dados SQLite
-- 📊 Visualização de resultados em tabelas interativas
-- 💾 Exportação de resultados (Excel, CSV)
-- 🎓 Treinamento do modelo com queries customizadas
+- 📊 Visualização de resultados em tabelas
+- 💾 Exportação de resultados (Excel)
 - 🌐 Interface web moderna usando Flet
-- 🐳 Suporte a containers Docker
+- 🐳 Suporte a containers Docker ou Podman
 
 ## 🚀 Instalação e Execução
 
@@ -92,11 +91,11 @@ presentation/    # Interface do usuário
 
 ## 🎯 Como Usar
 
-1. **Configurar Banco de Dados**: Selecione ou faça upload de um banco SQLite
-2. **Treinar Modelo**: Adicione exemplos de queries SQL para melhorar a precisão
+1. **Configurar Banco de Dados**: Faça upload de uma tabela Excel
+2. **Treinar Modelo**: Realize o treinamento do modelo
 3. **Fazer Perguntas**: Digite perguntas em linguagem natural
 4. **Visualizar Resultados**: Veja os dados em formato de tabela
-5. **Exportar**: Salve os resultados em Excel ou CSV
+5. **Exportar**: Salve os resultados em Excel
 
 ## 🐳 Docker
 
