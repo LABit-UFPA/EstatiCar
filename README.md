@@ -93,7 +93,7 @@ presentation/    # Interface do usuário
 ## 🎯 Como Usar
 
 1. **Configurar Banco de Dados**: Selecione ou faça upload de um banco SQLite
-2. **Treinar Modelo** (opcional): Adicione exemplos de queries SQL para melhorar a precisão
+2. **Treinar Modelo**: Adicione exemplos de queries SQL para melhorar a precisão
 3. **Fazer Perguntas**: Digite perguntas em linguagem natural
 4. **Visualizar Resultados**: Veja os dados em formato de tabela
 5. **Exportar**: Salve os resultados em Excel ou CSV
