@@ -1,11 +1,11 @@
-# Script de inicialização para configurar o ambiente FlechaSQL Docker (Windows)
+# Script de inicialização para configurar o ambiente EstatiCar Docker (Windows)
 # Usage: .\docker-setup.ps1 [modelo-ollama]
 
 param(
     [string]$Modelo = "mistral"
 )
 
-Write-Host "🐳 FlechaSQL Docker Setup" -ForegroundColor Cyan
+Write-Host "🐳 EstatiCar Docker Setup" -ForegroundColor Cyan
 Write-Host "=========================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -97,7 +97,7 @@ Write-Host ""
 Write-Host "🌐 Acesse a aplicação em: http://localhost:8080" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "📊 Serviços disponíveis:" -ForegroundColor Cyan
-Write-Host "   - FlechaSQL Web:  http://localhost:8080"
+Write-Host "   - EstatiCar Web:  http://localhost:8080"
 Write-Host "   - Downloads:      http://localhost:8081"
 Write-Host "   - Qdrant API:     http://localhost:6333"
 Write-Host "   - Ollama API:     http://localhost:11434"

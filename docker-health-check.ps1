@@ -1,11 +1,11 @@
 #!/usr/bin/env pwsh
-# Script para verificar conectividade e health dos containers FlechaSQL
+# Script para verificar conectividade e health dos containers EstatiCar
 
 param(
     [string]$ContainerRuntime = "auto"  # auto, docker, ou podman
 )
 
-Write-Host "🔍 FlechaSQL - Verificação de Saúde dos Containers" -ForegroundColor Cyan
+Write-Host "🔍 EstatiCar - Verificação de Saúde dos Containers" -ForegroundColor Cyan
 Write-Host "=================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -33,7 +33,7 @@ Write-Host ""
 
 # Verificar containers rodando
 Write-Host "📦 Status dos Containers:" -ForegroundColor Cyan
-& $cmd ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" --filter "name=flechasql" --filter "name=qdrant" --filter "name=ollama"
+& $cmd ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" --filter "name=estaticar" --filter "name=qdrant" --filter "name=ollama"
 Write-Host ""
 
 # Verificar health do Qdrant
@@ -72,17 +72,17 @@ try {
 Write-Host ""
 Write-Host "🌐 Testando Conectividade Interna:" -ForegroundColor Cyan
 
-Write-Host "  FlechaSQL → Qdrant..." -ForegroundColor Yellow
+Write-Host "  EstatiCar → Qdrant..." -ForegroundColor Yellow
 try {
-    & $cmd exec flechasql wget -q -O- http://qdrant:6333/health -T 2 2>$null | Out-Null
+    & $cmd exec estaticar wget -q -O- http://qdrant:6333/health -T 2 2>$null | Out-Null
     Write-Host "    ✅ Conectado" -ForegroundColor Green
 } catch {
     Write-Host "    ❌ Falha na conexão" -ForegroundColor Red
 }
 
-Write-Host "  FlechaSQL → Ollama..." -ForegroundColor Yellow
+Write-Host "  EstatiCar → Ollama..." -ForegroundColor Yellow
 try {
-    & $cmd exec flechasql wget -q -O- http://ollama:11434 -T 2 2>$null | Out-Null
+    & $cmd exec estaticar wget -q -O- http://ollama:11434 -T 2 2>$null | Out-Null
     Write-Host "    ✅ Conectado" -ForegroundColor Green
 } catch {
     Write-Host "    ❌ Falha na conexão" -ForegroundColor Red
@@ -91,19 +91,19 @@ try {
 # Verificar rede
 Write-Host ""
 Write-Host "🔗 Informações da Rede:" -ForegroundColor Cyan
-$networkName = & $cmd network ls --filter "name=flechasql" --format "{{.Name}}" | Select-Object -First 1
+$networkName = & $cmd network ls --filter "name=estaticar" --format "{{.Name}}" | Select-Object -First 1
 if ($networkName) {
     Write-Host "  Rede: $networkName" -ForegroundColor Gray
     Write-Host "  Containers conectados:" -ForegroundColor Gray
     & $cmd network inspect $networkName --format '{{range $key, $value := .Containers}}  - {{$value.Name}} ({{$value.IPv4Address}}){{"\n"}}{{end}}'
 } else {
-    Write-Host "  ⚠️  Rede flechasql não encontrada" -ForegroundColor Yellow
+    Write-Host "  ⚠️  Rede estaticar não encontrada" -ForegroundColor Yellow
 }
 
 # Verificar logs recentes
 Write-Host ""
-Write-Host "📋 Últimas 5 linhas de log do FlechaSQL:" -ForegroundColor Cyan
-& $cmd logs flechasql --tail=5 2>&1 | ForEach-Object {
+Write-Host "📋 Últimas 5 linhas de log do EstatiCar:" -ForegroundColor Cyan
+& $cmd logs estaticar --tail=5 2>&1 | ForEach-Object {
     Write-Host "  $_" -ForegroundColor Gray
 }
 

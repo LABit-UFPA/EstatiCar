@@ -1,6 +1,6 @@
-# 🐳 Executando FlechaSQL com Docker/Podman
+# 🐳 Executando EstatiCar com Docker/Podman
 
-Este guia mostra como executar a aplicação FlechaSQL usando containers Docker ou Podman.
+Este guia mostra como executar a aplicação EstatiCar usando containers Docker ou Podman.
 
 ## 📋 Pré-requisitos
 
@@ -38,8 +38,8 @@ docker compose up -d
 podman compose up -d
 ```
 
-Isso iniciará três serviços em uma rede isolada (`flechasql-network`):
-- **flechasql**: A aplicação principal (portas 8080 e 8081)
+Isso iniciará três serviços em uma rede isolada (`estaticar-network`):
+- **estaticar**: A aplicação principal (portas 8080 e 8081)
 - **qdrant**: Banco de dados vetorial (porta 6333)
 - **ollama**: Servidor LLM (porta 11434)
 
@@ -75,7 +75,7 @@ Abra seu navegador em:
 docker compose logs -f
 
 # Apenas a aplicação
-docker compose logs -f flechasql
+docker compose logs -f estaticar
 
 # Apenas o Ollama
 docker compose logs -f ollama
@@ -188,8 +188,8 @@ Este erro ocorre quando há conflito entre o código no container e os volume mo
 
 ```bash
 # Parar e remover o container
-podman stop flechasql
-podman rm flechasql
+podman stop estaticar
+podman rm estaticar
 
 # Reconstruir a imagem
 cd app
@@ -227,7 +227,7 @@ Se as portas 8080, 8081, 6333 ou 11434 já estiverem em uso, você pode alterá-
 
 ```yaml
 services:
-  flechasql:
+  estaticar:
     ports:
       - "9080:8080"  # Altere 9080 para a porta desejada
       - "9081:8081"
@@ -239,16 +239,16 @@ Para testar se os containers conseguem se comunicar na rede:
 
 ```bash
 # Verificar se Qdrant está acessível
-docker exec -it flechasql wget -q -O- http://qdrant:6333/health
+docker exec -it estaticar wget -q -O- http://qdrant:6333/health
 
 # Verificar se Ollama está acessível
-docker exec -it flechasql nc -zv ollama 11434
+docker exec -it estaticar nc -zv ollama 11434
 
 # Ver todas as redes
 docker network ls
 
-# Inspecionar a rede flechasql
-docker network inspect app_flechasql-network
+# Inspecionar a rede estaticar
+docker network inspect app_estaticar-network
 ```
 
 ## 📝 Variáveis de Ambiente
@@ -284,11 +284,11 @@ podman compose up -d
 
 ## 🏗️ Arquitetura
 
-Os containers estão conectados em uma rede bridge isolada (`flechasql-network`):
+Os containers estão conectados em uma rede bridge isolada (`estaticar-network`):
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│         flechasql-network (bridge)                  │
+│         estaticar-network (bridge)                  │
 │                                                     │
 │  ┌─────────────┐                                   │
 │  │  Navegador  │ (host)                            │
@@ -296,7 +296,7 @@ Os containers estão conectados em uma rede bridge isolada (`flechasql-network`)
 │         │ :8080 (web) / :8081 (downloads)          │
 │         │                                           │
 │  ┌──────▼──────┐                                   │
-│  │  FlechaSQL  │                                   │
+│  │  EstatiCar  │                                   │
 │  │  Container  │                                   │
 │  └──┬────────┬─┘                                   │
 │     │        │                                      │
@@ -322,7 +322,7 @@ Volumes Persistentes:
 ### Benefícios da Rede Isolada
 
 - **Isolamento**: Os containers se comunicam apenas entre si
-- **DNS interno**: Resolvem-se por nome (qdrant, ollama, flechasql)
+- **DNS interno**: Resolvem-se por nome (qdrant, ollama, estaticar)
 - **Segurança**: Sem exposição desnecessária ao host
 - **Health checks**: Aplicação só inicia quando dependências estão prontas
 

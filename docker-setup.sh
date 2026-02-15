@@ -1,12 +1,12 @@
 #!/bin/bash
-# Script de inicialização para configurar o ambiente FlechaSQL Docker
+# Script de inicialização para configurar o ambiente EstatiCar Docker
 # Usage: ./docker-setup.sh [modelo-ollama]
 
 set -e
 
 MODELO=${1:-mistral}
 
-echo "🐳 FlechaSQL Docker Setup"
+echo "🐳 EstatiCar Docker Setup"
 echo "========================="
 echo ""
 
@@ -86,7 +86,7 @@ echo ""
 echo "🌐 Acesse a aplicação em: http://localhost:8080"
 echo ""
 echo "📊 Serviços disponíveis:"
-echo "   - FlechaSQL Web:  http://localhost:8080"
+echo "   - EstatiCar Web:  http://localhost:8080"
 echo "   - Downloads:      http://localhost:8081"
 echo "   - Qdrant API:     http://localhost:6333"
 echo "   - Ollama API:     http://localhost:11434"

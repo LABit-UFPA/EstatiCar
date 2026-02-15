@@ -1,5 +1,5 @@
 """
-FlechaSQL — Composition Root
+EstatiCar — Composition Root
 ============================
 This is the only place where concrete implementations are instantiated and
 wired together (Dependency Injection).  Every other module depends only on
@@ -256,7 +256,7 @@ download_server = DownloadServer(upload_directory, port=8081)
 download_server.start()
 
 # Set secret key for uploads via environment variable
-os.environ["FLET_SECRET_KEY"] = "flechasql-secret-key-2026"
+os.environ["FLET_SECRET_KEY"] = "estaticar-secret-key-2026"
 
 # Use WEB_BROWSER mode with custom modal overlays (no native dialogs)
 ft.app(

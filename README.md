@@ -1,4 +1,4 @@
-# FlechaSQL 🎯
+# EstatiCar 🎯
 
 Uma aplicação web intuitiva para consultar bancos de dados SQLite usando linguagem natural, powered by AI.
 

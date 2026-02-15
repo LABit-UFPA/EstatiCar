@@ -1,9 +1,9 @@
 services:
-  flechasql:
+  estaticar:
     build:
       context: ..
       dockerfile: Containerfile
-    container_name: flechasql
+    container_name: estaticar
     ports:
       - "8080:8080"  # Flet web interface
       - "8081:8081"  # Flask download server
@@ -23,7 +23,7 @@ services:
       - OLLAMA_HOST=http://ollama:11434
     command: ["python", "main.py"]
     networks:
-      - flechasql-network
+      - estaticar-network
 
   qdrant:
     image: qdrant/qdrant:latest
@@ -41,7 +41,7 @@ services:
       retries: 5
       start_period: 10s
     networks:
-      - flechasql-network
+      - estaticar-network
 
   ollama:
     image: ollama/ollama:latest
@@ -58,7 +58,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - flechasql-network
+      - estaticar-network
     # Uncomment the lines below if you have an NVIDIA GPU
     # deploy:
     #   resources:
@@ -69,7 +69,7 @@ services:
     #           capabilities: [gpu]
 
 networks:
-  flechasql-network:
+  estaticar-network:
     driver: bridge
 
 volumes:

@@ -5,8 +5,8 @@ import os
 
 
 def apply_theme(page: ft.Page) -> None:
-    """Apply the default FlechaSQL theme to the page."""
-    page.title = "FlechaSQL"
+    """Apply the default EstatiCar theme to the page."""
+    page.title = "EstatiCar"
     page.theme_mode = "light"
     page.padding = 0
     

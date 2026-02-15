@@ -270,7 +270,7 @@ wheels = [
 ]
 
 [[package]]
-name = "flechasql"
+name = "EstatiCar"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
