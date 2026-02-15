@@ -29,6 +29,10 @@ chmod +x docker-setup.sh
 No diretório `app/`, execute (substituindo `docker` por `podman` se necessário):
 
 ```bash
+# Criar diretórios necessários primeiro
+mkdir -p uploads build_assets
+
+# Subir os containers
 docker compose up -d
 # ou
 podman compose up -d
@@ -162,6 +166,21 @@ docker compose up -d
 ```
 
 ## 🔍 Troubleshooting
+
+### Erro "no such file or directory" ao montar volumes
+
+Se você ver um erro como `statfs /mnt/c/Users/.../uploads: no such file or directory`:
+
+```bash
+# Criar os diretórios necessários
+cd app
+mkdir -p uploads build_assets
+
+# Tentar novamente
+podman compose up -d
+```
+
+Os scripts automáticos (`docker-setup.ps1` / `docker-setup.sh`) já criam esses diretórios automaticamente.
 
 ### Erro "No module named flet.__main__"
 
