@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 import flet as ft
 
 from domain.use_cases.export_result import ExportResultUseCase
 from presentation.state.app_state import AppState
+
+logger = logging.getLogger(__name__)
 
 
 class DownloadController:
@@ -20,9 +23,7 @@ class DownloadController:
         self._state = state
 
     def handle(self, e=None) -> None:
-        print("[PROCESSING] Save table button clicked")
         if self._state.last_result is not None:
-            print(f"[PROCESSING] Result found, saving data...")
             
             import os
             from datetime import datetime
@@ -43,11 +44,9 @@ class DownloadController:
             # Use case adds .xlsx, so remove it from the path
             filepath = os.path.join(upload_dir, f"resultado_{timestamp}")
             
-            print(f"[PROCESSING] Saving to: {filepath} (use case will add .xlsx)")
             # Don't open folder in web mode (open_folder=False)
             msg = self._use_case.execute(self._state.last_result, filepath, open_folder=False)
-            print(f"[SUCCESS] File saved: {msg}")
-            print(f"[PROCESSING] Final file: {filepath}.xlsx")
+            logger.info(f"File saved: {filepath}.xlsx")
             
             # Build download URL - use relative URL based on current page host
             # Extract hostname from page URL or use localhost for desktop mode
@@ -63,11 +62,9 @@ class DownloadController:
                 host = 'localhost'
             
             download_url = f"http://{host}:8081/download/{filename}"
-            print(f"[PROCESSING] Download URL: {download_url}")
             
             # Create download button that triggers download without opening new tab
             def trigger_download(e):
-                print(f"[PROCESSING] Downloading file via Flask: {download_url}")
                 
                 # Use HTML link with download attribute - works better in web mode
                 # Create a hidden link, click it programmatically, then remove it
@@ -89,20 +86,18 @@ class DownloadController:
                     # Try using page.js to execute JavaScript
                     if hasattr(self._page, 'js'):
                         self._page.js(js_code)
-                        print("[SUCCESS] Download via JavaScript executed")
                     else:
                         # Fallback: use window.open with _self target (replaces current page temporarily)
-                        print("[PROCESSING] JavaScript not available, using launch_url")
                         self._page.launch_url(download_url)
                 except Exception as js_err:
-                    print(f"[ERROR] JavaScript execution failed: {js_err}")
+                    logger.error(f"JavaScript execution failed: {js_err}")
                     # Fallback: use launch_url
                     self._page.launch_url(download_url)
                 
                 # Show success notification
                 if hasattr(self._page, 'show_notification'):
                     self._page.show_notification(
-                        f"✅ Download iniciado: {filename}", 
+                        f"Download iniciado: {filename}", 
                         ft.colors.GREEN, 
                         duration=3
                     )
@@ -117,7 +112,7 @@ class DownloadController:
                 threading.Thread(target=close_later, daemon=True).start()
             
             download_button = ft.ElevatedButton(
-                "📥 Baixar Arquivo",
+                "Baixar Arquivo",
                 on_click=trigger_download,
                 style=ft.ButtonStyle(
                     bgcolor=ft.colors.GREEN_400,
@@ -130,7 +125,7 @@ class DownloadController:
             # Create modal container
             modal_content = ft.Container(
                 content=ft.Column([
-                    ft.Text("✅ Arquivo pronto!", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREEN),
+                    ft.Text("Arquivo pronto!", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREEN),
                     ft.Text(filename, size=12, color=ft.colors.GREY_700),
                     ft.Divider(),
                     download_button,
@@ -171,12 +166,10 @@ class DownloadController:
             self._page.overlay.append(self._download_modal)
             self._page.update()
             
-            print(f"[SUCCESS] Download modal displayed - URL: {download_url}")
-            
         else:
-            print("[ERROR] No result to save")
+            logger.warning("No result to save")
             if hasattr(self._page, 'show_notification'):
-                self._page.show_notification("❌ Nenhum resultado encontrado para salvar", ft.colors.RED, duration=5)
+                self._page.show_notification("Nenhum resultado encontrado para salvar", ft.colors.RED, duration=5)
             self._page.update()
     
     def _close_download_modal(self) -> None:

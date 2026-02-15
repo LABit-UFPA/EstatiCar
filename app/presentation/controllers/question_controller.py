@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import time
+import logging
 import flet as ft
 import pandas as pd
 
 from domain.use_cases.ask_question import AskQuestionUseCase
 from presentation.components.data_table import build_data_table
 from presentation.state.app_state import AppState
+
+logger = logging.getLogger(__name__)
 
 
 class QuestionController:
@@ -36,33 +39,30 @@ class QuestionController:
             return
 
         # Disable UI and show progress notification
-        print("[PROCESSING] Showing question progress notification...")
         if hasattr(self._page, 'set_ui_busy'):
             self._page.set_ui_busy(True)
         if hasattr(self._page, 'show_notification'):
-            self._page.show_notification("⏳ Processando sua pergunta...", ft.colors.BLUE, duration=300)
+            self._page.show_notification("Processando sua pergunta...", ft.colors.BLUE, duration=300)
 
         result_data = None
         show_error = False
         try:
-            print(f"[PROCESSING] Executing question: {prompt}")
+            logger.info(f"Executing question: {prompt}")
             result = self._use_case.execute(prompt)
             self._state.last_result = result.data
-            print(f"[SUCCESS] Result received, is_empty: {result.is_empty}")
 
             if not result.is_empty and isinstance(result.data, pd.DataFrame):
                 result_data = result
             else:
-                print("[ERROR] Empty result, showing error")
+                logger.warning("Empty result received")
                 show_error = True
         except Exception as ex:
-            print(f"[ERROR] Question handler failed: {ex}")
+            logger.error(f"Question handler failed: {ex}")
             import traceback
             traceback.print_exc()
             show_error = True
         finally:
             # Re-enable UI and hide notification
-            print("[PROCESSING] Finalizing question processing...")
             if hasattr(self._page, 'set_ui_busy'):
                 self._page.set_ui_busy(False)
             if hasattr(self._page, 'hide_notification'):
@@ -79,7 +79,5 @@ class QuestionController:
                 ]
                 self._card_content.update()
                 self._page.update()
-                print("[SUCCESS] Page updated successfully")
             elif show_error:
                 self._error.show()
-                print("[ERROR] Error dialog shown")

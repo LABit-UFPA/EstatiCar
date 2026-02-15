@@ -7,6 +7,8 @@ import logging
 import time
 from datetime import datetime, timedelta
 
+logger = logging.getLogger(__name__)
+
 
 class DownloadServer:
     """Lightweight Flask server to serve download files."""
@@ -32,20 +34,13 @@ class DownloadServer:
             """Serve file with download headers and delete after sending."""
             filepath = os.path.join(self.upload_dir, filename)
             
-            print(f"[PROCESSING] Download request received: {filename}")
-            print(f"[PROCESSING] Searching file at: {filepath}")
+            logger.info(f"Download request: {filename}")
             
             if not os.path.exists(filepath):
-                print(f"[ERROR] File not found: {filepath}")
-                print(f"[PROCESSING] Available files in {self.upload_dir}:")
-                try:
-                    for f in os.listdir(self.upload_dir):
-                        print(f"  - {f}")
-                except Exception as e:
-                    print(f"[ERROR] Failed to list directory: {e}")
+                logger.error(f"File not found: {filepath}")
                 abort(404)
             
-            print(f"[SUCCESS] File found, sending: {filename}")
+            logger.info(f"Sending file: {filename}")
             
             # Delete file after response is sent
             @after_this_request
@@ -56,11 +51,11 @@ class DownloadServer:
                         time.sleep(2)
                         if os.path.exists(filepath):
                             os.remove(filepath)
-                            print(f"[SUCCESS] File deleted after download: {filename}")
+                            logger.info(f"File deleted after download: {filename}")
                     
                     threading.Thread(target=delayed_delete, daemon=True).start()
                 except Exception as e:
-                    print(f"[ERROR] Failed to delete file {filename}: {e}")
+                    logger.error(f"Failed to delete file {filename}: {e}")
                 return response
             
             # Send file with download headers (forces download in browser Downloads folder)
@@ -84,12 +79,11 @@ class DownloadServer:
                     if now - file_time > timedelta(hours=max_age_hours):
                         os.remove(filepath)
                         count += 1
-                        print(f"[SUCCESS] Removed old file: {filename}")
             
             if count > 0:
-                print(f"[SUCCESS] {count} old file(s) removed")
+                logger.info(f"{count} old file(s) removed")
         except Exception as e:
-            print(f"[ERROR] Cleanup failed: {e}")
+            logger.error(f"Cleanup failed: {e}")
     
     def _periodic_cleanup(self, interval_minutes: int = 30, max_age_hours: int = 1):
         """Executa limpeza periódica de arquivos antigos."""
@@ -100,9 +94,8 @@ class DownloadServer:
     def start(self):
         """Start Flask server in background thread."""
         def run_server():
-            print(f"[PROCESSING] Starting download server on port {self.port}")
-            print(f"[PROCESSING] Serving files from: {self.upload_dir}")
-            print(f"[PROCESSING] Base URL: http://0.0.0.0:{self.port}/download/")
+            logger.info(f"Starting download server on port {self.port}")
+            logger.info(f"Serving files from: {self.upload_dir}")
             # Listen on 0.0.0.0 to accept connections from outside container
             self.app.run(host='0.0.0.0', port=self.port, debug=False, use_reloader=False, threaded=True)
         
@@ -119,5 +112,5 @@ class DownloadServer:
         
         # Wait a bit for server to start
         time.sleep(0.5)
-        print(f"[SUCCESS] Download server ready")
-        print(f"[PROCESSING] Auto-cleanup enabled (files > 1 hour will be removed)")
+        logger.info("Download server ready")
+        logger.info("Auto-cleanup enabled (files > 1 hour will be removed)")

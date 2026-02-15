@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import logging
 from typing import Callable
 
 import flet as ft
@@ -9,6 +10,8 @@ import pandas as pd
 from presentation.components.data_table import build_data_table
 from presentation.components.dropdown_menu import DropdownMenu
 from presentation.state.app_state import AppState
+
+logger = logging.getLogger(__name__)
 
 AVAILABLE_MODELS = [
     "mistral:latest",
@@ -86,67 +89,61 @@ class ColumnFilterView:
 
     def _on_file_picked(self, e: ft.FilePickerResultEvent) -> None:
         if not e.files:
-            print("[ERROR] No file selected")
+            logger.warning("No file selected")
             return
         
         try:
             # Get the selected file
             selected_file = e.files[0]
-            print(f"[PROCESSING] File selected: {selected_file.name}")
             
             # Check if we have direct file access (desktop mode)
             if selected_file.path:
                 # Desktop mode - direct file access
                 self._excel_path = selected_file.path
-                print(f"[PROCESSING] File path obtained: {self._excel_path}")
                 # Read the Excel file immediately
                 self._df = self._file_port.read_excel(self._excel_path)
                 self._rebuild_column_lists()
                 self._page.update()
-                print("[SUCCESS] File loaded successfully")
+                logger.info(f"File loaded: {selected_file.name}")
                 
                 # Show success message
                 if hasattr(self._page, 'show_notification'):
-                    self._page.show_notification(f"✅ Arquivo '{selected_file.name}' carregado!", ft.colors.GREEN)
+                    self._page.show_notification(f"Arquivo '{selected_file.name}' carregado!", ft.colors.GREEN)
             else:
                 # Web mode - upload file
-                print("[PROCESSING] Web mode - starting upload...")
                 self._excel_path = os.path.join(self._upload_dir, selected_file.name)
                 
                 # Start upload
                 try:
                     upload_url = self._page.get_upload_url(selected_file.name, 600)
-                    print(f"[PROCESSING] Upload URL obtained: {upload_url}")
                     self._file_picker.upload(
                         files=[ft.FilePickerUploadFile(
                             name=selected_file.name,
                             upload_url=upload_url
                         )]
                     )
-                    print("[SUCCESS] Upload started successfully")
+                    logger.info(f"Upload started: {selected_file.name}")
                 except Exception as upload_ex:
-                    print(f"[ERROR] Failed to start upload: {upload_ex}")
+                    logger.error(f"Failed to start upload: {upload_ex}")
                     import traceback
                     traceback.print_exc()
                     raise
         except Exception as ex:
-            print(f"[ERROR] File processing failed: {ex}")
+            logger.error(f"File processing failed: {ex}")
             import traceback
             traceback.print_exc()
             
             # Show error message
             if hasattr(self._page, 'show_notification'):
-                self._page.show_notification(f"❌ Erro ao carregar arquivo: {str(ex)}", ft.colors.RED, duration=5)
+                self._page.show_notification(f"Erro ao carregar arquivo: {str(ex)}", ft.colors.RED, duration=5)
     
     def _on_upload_complete(self, e: ft.FilePickerUploadEvent) -> None:
         """Called when file upload is complete in web mode"""
         try:
-            print(f"[SUCCESS] Upload complete: {e.file_name}")
-            
             if e.error:
-                print(f"[ERROR] Upload error: {e.error}")
+                logger.error(f"Upload error: {e.error}")
                 if hasattr(self._page, 'show_notification'):
-                    self._page.show_notification(f"❌ Erro no upload: {e.error}", ft.colors.RED, duration=5)
+                    self._page.show_notification(f"Erro no upload: {e.error}", ft.colors.RED, duration=5)
                 return
             
             # Give time for file to be written
@@ -154,7 +151,6 @@ class ColumnFilterView:
             time.sleep(0.3)
             
             if self._excel_path and os.path.exists(self._excel_path):
-                print(f"[PROCESSING] File found: {self._excel_path}")
                 # Read the Excel file
                 self._df = self._file_port.read_excel(self._excel_path)
                 self._rebuild_column_lists()
@@ -163,21 +159,19 @@ class ColumnFilterView:
                 # Show success message
                 if hasattr(self._page, 'show_notification'):
                     self._page.show_notification(f"Arquivo '{e.file_name}' carregado!", ft.colors.GREEN)
-                print("[SUCCESS] File loaded after upload")
+                logger.info(f"File loaded after upload: {e.file_name}")
             else:
-                print(f"[ERROR] File not found: {self._excel_path}")
-                if os.path.exists(self._upload_dir):
-                    print(f"[PROCESSING] Files in {self._upload_dir}: {os.listdir(self._upload_dir)}")
+                logger.error(f"File not found after upload: {self._excel_path}")
                     
                 if hasattr(self._page, 'show_notification'):
                     self._page.show_notification("Arquivo não foi encontrado após upload", ft.colors.RED, duration=5)
         except Exception as ex:
-            print(f"[ERROR] File processing after upload failed: {ex}")
+            logger.error(f"File processing after upload failed: {ex}")
             import traceback
             traceback.print_exc()
             
             if hasattr(self._page, 'show_notification'):
-                self._page.show_notification(f"❌ Erro: {str(ex)}", ft.colors.RED, duration=5)
+                self._page.show_notification(f"Erro: {str(ex)}", ft.colors.RED, duration=5)
 
     def _rebuild_column_lists(self) -> None:
         """Rebuild column lists from DataFrame and apply current search filter."""
@@ -279,7 +273,6 @@ class ColumnFilterView:
     # -- Public API ----------------------------------------------------------
 
     def open(self) -> None:
-        print("[PROCESSING] Opening column filter modal...")
         try:
             # Build the modal content
             content = self._build_modal_content()
@@ -303,14 +296,13 @@ class ColumnFilterView:
             self._modal_container.expand = True
             try:
                 self._page.update()
-                print("[SUCCESS] Filter modal opened")
             except Exception as update_error:
-                print(f"[ERROR] Failed to update page after opening modal: {update_error}")
+                logger.error(f"Failed to update page after opening modal: {update_error}")
                 # Tentar recuperar fechando o modal
                 self.close()
                 raise
         except Exception as e:
-            print(f"[ERROR] Failed to open modal: {e}")
+            logger.error(f"Failed to open modal: {e}")
             import traceback
             traceback.print_exc()
             # Garantir que modal está fechado em caso de erro
@@ -329,7 +321,6 @@ class ColumnFilterView:
         # Clear modal content to prevent visual bugs
         self._modal_container.content = None
         self._page.update()
-        print("[SUCCESS] Modal closed and cleaned")
 
 
     def _build_modal_content(self) -> ft.Container:

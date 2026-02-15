@@ -11,6 +11,18 @@ Layers (inner → outer):
 
 import flet as ft
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(levelname)s] %(name)s: %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 # -- Infrastructure (concrete implementations) --------------------------------
 from infrastructure.adapters.ollama_adapter import OllamaAdapter
@@ -220,7 +232,7 @@ def main(page: ft.Page) -> None:
         page.update()
 
     except Exception as e:
-        print(f"[ERROR] Initialization failed: {e}")
+        logger.error(f"Initialization failed: {e}")
         import traceback
         traceback.print_exc()
         # Show error in the page
@@ -241,15 +253,15 @@ upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "upl
 os.makedirs(upload_directory, exist_ok=True)
 
 # Clean old files from previous runs
-print("[PROCESSING] Cleaning old files from uploads folder...")
+logger.info("Cleaning old files from uploads folder...")
 try:
     for filename in os.listdir(upload_directory):
         filepath = os.path.join(upload_directory, filename)
         if os.path.isfile(filepath):
             os.remove(filepath)
-            print(f"[SUCCESS] Removed file: {filename}")
+            logger.info(f"Removed file: {filename}")
 except Exception as e:
-    print(f"[ERROR] Failed to clean uploads: {e}")
+    logger.error(f"Failed to clean uploads: {e}")
 
 # Start download server (Flask) on port 8081
 download_server = DownloadServer(upload_directory, port=8081)
