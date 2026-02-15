@@ -38,9 +38,16 @@ class ColumnFilterView:
         self._excel_path: str | None = None
         self._df: pd.DataFrame | None = None
         self._is_modal_open = False  # Flag to prevent multiple opens
+        self._search_query: str = ""  # Search filter
 
         self._include_list = ft.ListView(expand=True, controls=[])
         self._exclude_list = ft.ListView(expand=True, controls=[])
+        
+        # Store all column buttons to enable filtering
+        self._all_columns: dict[str, ft.TextButton] = {}  # col_name -> button
+        # Track which columns are included/excluded (independent of search filter)
+        self._included_columns: set[str] = set()
+        self._excluded_columns: set[str] = set()
 
         self._file_picker = ft.FilePicker(
             on_result=self._on_file_picked,
@@ -173,44 +180,92 @@ class ColumnFilterView:
                 self._page.show_notification(f"❌ Erro: {str(ex)}", ft.colors.RED, duration=5)
 
     def _rebuild_column_lists(self) -> None:
+        """Rebuild column lists from DataFrame and apply current search filter."""
         self._exclude_list.controls.clear()
         self._include_list.controls.clear()
+        self._all_columns.clear()
+        self._included_columns.clear()
+        self._excluded_columns.clear()
+        self._search_query = ""  # Reset search when loading new file
+        
         if self._df is not None:
             for col in self._df.columns:
-                self._exclude_list.controls.append(
-                    ft.TextButton(text=col, on_click=self._toggle_item)
-                )
+                btn = ft.TextButton(text=col, on_click=self._toggle_item)
+                self._all_columns[col] = btn
+                self._excluded_columns.add(col)  # Start in excluded list
+                self._exclude_list.controls.append(btn)
+        
+        # Apply current search filter
+        self._apply_search_filter()
 
+    def _on_search_change(self, e) -> None:
+        """Handle search query changes."""
+        self._search_query = e.control.value.lower().strip()
+        self._apply_search_filter()
+        self._page.update()
+    
+    def _apply_search_filter(self) -> None:
+        """Filter columns based on search query."""
+        # Clear and rebuild with filter
+        self._include_list.controls.clear()
+        self._exclude_list.controls.clear()
+        
+        for col_name, btn in self._all_columns.items():
+            # Show columns matching search (or all if no search query)
+            if not self._search_query or self._search_query in col_name.lower():
+                if col_name in self._included_columns:
+                    self._include_list.controls.append(btn)
+                elif col_name in self._excluded_columns:
+                    self._exclude_list.controls.append(btn)
+    
     def _toggle_item(self, e) -> None:
         btn = e.control
-        if btn in self._include_list.controls:
-            self._include_list.controls.remove(btn)
-            self._exclude_list.controls.append(btn)
-        elif btn in self._exclude_list.controls:
-            self._exclude_list.controls.remove(btn)
-            self._include_list.controls.append(btn)
+        col_name = btn.text
+        
+        # Update permanent state
+        if col_name in self._included_columns:
+            self._included_columns.remove(col_name)
+            self._excluded_columns.add(col_name)
+        elif col_name in self._excluded_columns:
+            self._excluded_columns.remove(col_name)
+            self._included_columns.add(col_name)
+        
+        # Reapply filter to update visible lists
+        self._apply_search_filter()
         self._page.update()
 
     def _move_to_include(self, e) -> None:
+        """Move first visible excluded column to included."""
         if self._exclude_list.controls:
-            item = self._exclude_list.controls.pop(0)
-            self._include_list.controls.append(item)
+            btn = self._exclude_list.controls[0]
+            col_name = btn.text
+            self._excluded_columns.remove(col_name)
+            self._included_columns.add(col_name)
+            self._apply_search_filter()
             self._page.update()
 
     def _move_to_exclude(self, e) -> None:
+        """Move first visible included column to excluded."""
         if self._include_list.controls:
-            item = self._include_list.controls.pop(0)
-            self._exclude_list.controls.append(item)
+            btn = self._include_list.controls[0]
+            col_name = btn.text
+            self._included_columns.remove(col_name)
+            self._excluded_columns.add(col_name)
+            self._apply_search_filter()
             self._page.update()
 
     def _move_all_to_include(self, e) -> None:
-        self._include_list.controls.extend(self._exclude_list.controls[:])
-        self._exclude_list.controls.clear()
+        """Move all columns to included."""
+        self._included_columns.update(self._excluded_columns)
+        self._excluded_columns.clear()
+        self._apply_search_filter()
         self._page.update()
 
     def _move_all_to_exclude(self, e) -> None:
-        self._exclude_list.controls.extend(self._include_list.controls[:])
-        self._include_list.controls.clear()
+        """Move all columns to excluded."""
+        self._excluded_columns.update(self._included_columns)
+        self._included_columns.clear()
+        self._apply_search_filter()
         self._page.update()
 
     def _handle_train_click(self) -> None:
@@ -278,6 +333,18 @@ class ColumnFilterView:
 
 
     def _build_modal_content(self) -> ft.Container:
+        # Search bar (initialize with current search query)
+        search_field = ft.TextField(
+            label="🔍 Buscar coluna",
+            hint_text="Digite para filtrar...",
+            value=self._search_query,  # Restore search query if modal reopens
+            on_change=self._on_search_change,
+            border_radius=8,
+            filled=True,
+            bgcolor=ft.colors.GREY_100,
+            # prefix_icon=ft.Icons.SEARCH,
+        )
+        
         exclude_container = ft.Container(
             content=ft.Column([
                 ft.Text("Colunas Removidas:", size=16, weight=ft.FontWeight.BOLD, color="red600"),
@@ -307,7 +374,7 @@ class ColumnFilterView:
 
         return ft.Container(
             width=700,
-            height=600,
+            height=650,  # Increased height for search bar
             bgcolor=ft.colors.WHITE,
             border_radius=12,
             padding=20,
@@ -340,6 +407,7 @@ class ColumnFilterView:
                         allow_multiple=False, allowed_extensions=["xlsx"]
                     ),
                 ),
+                search_field,  # Add search bar here
                 ft.Row([exclude_container, buttons, include_container], expand=True),
                 ft.Text(
                     "Escolha qual IA quer utilizar:",
