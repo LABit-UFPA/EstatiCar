@@ -285,14 +285,17 @@ def main(page: ft.Page) -> None:
         import traceback
         traceback.print_exc()
         # Show error in the page
-        page.clean()
-        page.add(
-            ft.Column([
-                ft.Text(f"Erro ao inicializar aplicação:", size=20, color="red"),
-                ft.Text(f"{str(e)}", size=14),
-            ])
-        )
-        page.update()
+        try:
+            page.clean()
+            page.add(
+                ft.Column([
+                    ft.Text(f"Erro ao inicializar aplicação:", size=20, color="red"),
+                    ft.Text(f"{str(e)}", size=14),
+                ])
+            )
+            page.update()
+        except Exception:
+            pass
 
 
 import os
