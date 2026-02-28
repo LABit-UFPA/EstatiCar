@@ -32,8 +32,6 @@ class OllamaAdapter(AIModelPort):
         self._ollama_host = ollama_host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
         self._client = QdrantClient(url=qdrant_url)
         self._vn: _OllamaQdrant | None = None
-        self._ensure_instance()
-
     def _ensure_instance(self) -> None:
         config = {
             "client": self._client, 
@@ -42,18 +40,23 @@ class OllamaAdapter(AIModelPort):
         }
         self._vn = _OllamaQdrant(config=config)
 
+    def _get_vn(self) -> _OllamaQdrant:
+        if self._vn is None:
+            self._ensure_instance()
+        return self._vn
+
     def set_model(self, model: str) -> None:
         """Switch to a different LLM model."""
         self._model = model
-        self._ensure_instance()
+        self._vn = None
 
     # -- AIModelPort implementation ------------------------------------------
 
     def connect(self, db_path: str) -> None:
-        self._vn.connect_to_sqlite(db_path)
+        self._get_vn().connect_to_sqlite(db_path)
 
     def ask(self, prompt: str) -> QueryResult:
-        result = self._vn.ask(
+        result = self._get_vn().ask(
             prompt, visualize=False, print_results=False, allow_llm_to_see_data=True
         )
         sql = result[0] if result[0] else ""
@@ -61,10 +64,10 @@ class OllamaAdapter(AIModelPort):
         return QueryResult(sql=sql, data=data)
 
     def train(self, sql: str) -> None:
-        self._vn.train(sql=sql)
+        self._get_vn().train(sql=sql)
 
     def get_training_data(self) -> Any:
-        return self._vn.get_training_data()
+        return self._get_vn().get_training_data()
 
     def remove_training_data(self, id: str) -> None:
-        self._vn.remove_training_data(id=id)
+        self._get_vn().remove_training_data(id=id)
